@@ -1,0 +1,19 @@
+[project]
+name = "frenchtrainer"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "chainlit>=2.2.1",
+    "fastapi[standard]>=0.115.8",
+    "jinja2>=3.1.5",
+    "marimo>=0.11.8",
+    "marisa-trie>=1.2.1",
+    "matplotlib>=3.10.0",
+    "ollama>=0.4.7",
+    "pandas>=2.2.3",
+    "python-decouple>=3.8",
+    "seaborn>=0.13.2",
+    "sqlmodel>=0.0.22",
+]
