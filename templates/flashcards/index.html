@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcards</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .flip-card { perspective: 1000px; cursor: pointer; }
+        .flip-card-inner { position: relative; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.flip .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; }
+        .flip-card-back { transform: rotateY(180deg); }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-6">
+    <div class="container mx-auto">
+        <h1 class="text-3xl font-bold mb-6 text-center">Flashcards</h1>
+        <!-- New Flashcard Form Component -->
+        {% include "flashcards/_flashcard_form.html" %}
+        <!-- Display Random Flashcard with Flip on Click -->
+        {% if flashcard %}
+        <div class="flex flex-col items-center">
+            <div class="flip-card bg-white rounded shadow mx-auto w-80 h-48" id="flashcard">
+                <div class="flip-card-inner h-full">
+                    <div class="flip-card-front flex items-center justify-center h-full p-4">
+                        <p class="text-xl">{{ flashcard.question }}</p>
+                    </div>
+                    <div class="flip-card-back flex items-center justify-center h-full p-4">
+                        <div class="text-center">
+                            <p class="text-xl mb-1">{{ flashcard.question }}</p>
+                            <p class="text-xl font-semibold">{{ flashcard.answer }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Next Flashcard Button -->
+            <button onclick="location.reload()" class="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Next Flashcard</button>
+        </div>
+        {% else %}
+        <p class="text-center text-gray-600">No flashcards available.</p>
+        {% endif %}
+    </div>
+    <script>
+        document.getElementById("flashcard")?.addEventListener("click", function(){
+            this.classList.toggle("flip");
+        });
+    </script>
+</body>
+</html>
