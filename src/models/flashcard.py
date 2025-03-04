@@ -3,7 +3,6 @@ import datetime
 
 from sqlmodel import Field, SQLModel
 
-# Create your models here.
 class Flashcard(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
     question: str = Field(max_length=200)
@@ -15,4 +14,4 @@ class ShowFlashcard(SQLModel):
     answer: str
 
     class Config(): #tells pydantic to convert even non dict obj to json
-        orm_mode = True
+        from_attributes = True

@@ -16,12 +16,14 @@
 <body class="bg-gray-100 min-h-screen p-6">
     <div class="container mx-auto">
         <h1 class="text-3xl font-bold mb-6 text-center">Flashcards</h1>
-        <!-- New Flashcard Form Component -->
+        <!-- Flashcard Form Component -->
         {% include "flashcards/_flashcard_form.html" %}
         <!-- Display Random Flashcard with Flip on Click -->
         {% if flashcard %}
-        <div class="flex flex-col items-center">
+        <div class="flex flex-col items-center relative">
             <div class="flip-card bg-white rounded shadow mx-auto w-80 h-48" id="flashcard">
+                <!-- Play Audio Button -->
+            <button id="play-audio-btn" onclick="playAudio(event)" class="absolute top-2 right-2 bg-blue-500 hover:bg-blue-600 text-white p-2 rounded">🔊</button>
                 <div class="flip-card-inner h-full">
                     <div class="flip-card-front flex items-center justify-center h-full p-4">
                         <p class="text-xl">{{ flashcard.question }}</p>
@@ -42,9 +44,20 @@
         {% endif %}
     </div>
     <script>
-        document.getElementById("flashcard")?.addEventListener("click", function(){
+        // Updated flashcard click event to ignore clicks from the audio button.
+        document.getElementById("flashcard")?.addEventListener("click", function(e) {
+            if (e.target.closest("#play-audio-btn")) return;
             this.classList.toggle("flip");
         });
+        // function to call the TTS endpoint without flipping the card
+        function playAudio(event) {
+            event.stopPropagation();
+            const text = document.querySelector("#flashcard .flip-card-front p").innerText;
+            fetch(`/api/speak?text=${encodeURIComponent(text)}`)
+                .then(response => response.json())
+                .then(data => console.log(data))
+                .catch(err => console.error(err));
+        }
     </script>
 </body>
 </html>

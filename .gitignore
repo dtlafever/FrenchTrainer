@@ -172,3 +172,9 @@ cython_debug/
 
 # remove all ruff cache
 .ruff_cache/
+
+# remove edge TTS cache
+edge_output.mp3
+
+# db
+flashcards.db
