@@ -33,6 +33,8 @@ Feel free to change to whatever llm model you want from [ollama](https://ollama.
 5. Implement proper security
  a. (JWT)[https://jwt.io/introduction]
  b. [CSRF Protection](https://www.stackhawk.com/blog/csrf-protection-in-fastapi/)
+6. Py Testing
+7. Linting
 
  ## Flashcards to be added
  - Days of the week
