@@ -3,7 +3,7 @@ from ollama import AsyncClient
 import time
 from decouple import config
 
-from src.utils import get_system_prompt_from_file
+from backend.llm.utils import get_system_prompt_from_file
 
 from pathlib import Path
 

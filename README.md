@@ -17,7 +17,7 @@ This will install all the packages required and start up the fastapi server. You
 2. Install Ollama (if you want LLMs)
 - [Ollama](https://ollama.com/download) should be installed and running
 
-3. Create a `.env` file in the base of the repo and fill out the following fields:
+3. Create a `.env` file in the `backend` folder and fill out the following fields:
 ```
 LLM_MODEL="deepseek-r1:8b"
 SYSTEM_PROMPT_FILE="basic_prompt.txt"
@@ -33,8 +33,11 @@ Feel free to change to whatever llm model you want from [ollama](https://ollama.
 5. Implement proper security
  a. (JWT)[https://jwt.io/introduction]
  b. [CSRF Protection](https://www.stackhawk.com/blog/csrf-protection-in-fastapi/)
+ c. [OAuth2](https://fastapi.tiangolo.com/advanced/security/oauth2-scopes/)
+ d. [General Security Explanation and Best Practices](https://fastapi.tiangolo.com/tutorial/security/#fastapi-utilities)
 6. Py Testing
 7. Linting
+8. Proper Frontend (Cross Platform?)
 
  ## Flashcards to be added
  - Days of the week

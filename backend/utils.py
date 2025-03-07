@@ -1,17 +1,5 @@
-from selenium import webdriver
-from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
 import requests
-from pydantic import BaseModel
-
-def get_system_prompt_from_file(filename: str) -> str:
-    try:
-        with open(filename, 'r') as file:
-            return file.read()
-    except FileNotFoundError:
-        return f"Error: File '{filename}' not found."
-    except IOError:
-        return f"Error: Unable to read file '{filename}'."
 
 def replace_special_french_chars(string: str) -> str:
     """
