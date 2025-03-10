@@ -134,6 +134,7 @@ def lookup_french_verbs_from_bescherelle(verb: str, debug=False) -> dict:
 
     Returns:
         dict: The conjugation of the verb.
+        NOTE: the dict will have the key "error" = True if the verb does not exist in the Bescherelle database.
 
     Example Output:
     {
@@ -185,7 +186,6 @@ def lookup_french_verbs_from_bescherelle(verb: str, debug=False) -> dict:
     # replace special french characters with their ascii equivalent
     lower_verb = verb.lower()
     converted_verb = replace_special_french_chars(lower_verb)
-    print(converted_verb)
 
     verb_conj = {
         "groupe": 1,
@@ -205,8 +205,8 @@ def lookup_french_verbs_from_bescherelle(verb: str, debug=False) -> dict:
             "imperatif": {},
             "infinitif": "",
             "participe": {},
-        }
-        
+        },
+        "error": False
     }
 
     request = requests.get(f'https://conjugaison.bescherelle.com/verbes/{converted_verb}')
@@ -216,9 +216,12 @@ def lookup_french_verbs_from_bescherelle(verb: str, debug=False) -> dict:
 
     # confirm this verb exists in the bescherelle database
     div_contents = soup.find_all('div', class_='content')
+    error_strs = [
+        "La page demandée n'a pas pu être trouvée.",
+        "Pas de résultat"
+    ]
     for ele in div_contents:
-        verb_does_not_exist = "La page demandée n'a pas pu être trouvée." in ele.text
-        if verb_does_not_exist:
+        if any([error_str in ele.text for error_str in error_strs]):
             print(f"'{lower_verb}' does not exist in the Bescherelle database.")
             verb_conj["error"] = True
             return verb_conj
@@ -281,7 +284,6 @@ def lookup_french_verbs_from_bescherelle(verb: str, debug=False) -> dict:
     verb_conj["temps_composes"]["participe"] = _extract_single_value(soup, "Participe", "participe-passe", debug)
 
     # Return Our Verb
-    verb_conj["error"] = False
     return verb_conj
 
 if __name__ == '__main__':

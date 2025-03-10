@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional
 import datetime
 
 from sqlmodel import Field, SQLModel, Relationship
@@ -221,7 +221,7 @@ class FrenchSubjonctifPlusQueParfait(SQLModel, table=True):
 
 class FrenchImperatifPasse(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
-    tu: str = Field(max_length=50)
+    # tu: str = Field(max_length=50)
     nous: str = Field(max_length=50)
     vous: str = Field(max_length=50)
     
@@ -524,13 +524,10 @@ def create_and_get_verb_conjugations(verb_dict: dict) -> dict:
         ils_elles=temps_composes["subjonctif"]["Plus-que-parfait"][5]
     )
 
-    # TODO: handle when there is only two tenses instead of 3 (for example, "etre").
-    # This seems to occur when you have active voice. Passive voice has 3.
     new_imperatif_passe = FrenchImperatifPasse(
-        tu=temps_composes["imperatif"]["Passé"][0],
-        nous=temps_composes["imperatif"]["Passé"][1],
-        # vous=temps_composes["imperatif"]["Passé"][2],
-        vous="FIXME"
+        # tu=temps_composes["imperatif"]["Passé"][0],
+        nous=temps_composes["imperatif"]["Passé"][0],
+        vous=temps_composes["imperatif"]["Passé"][1]
     )
 
     return {

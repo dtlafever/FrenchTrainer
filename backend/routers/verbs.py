@@ -26,7 +26,7 @@ def create_verb(verb: str, session: Session = Depends(get_session)):
 
     # If not in database, lookup in Bescherelle
     verb_dict = lookup_french_verbs_from_bescherelle(verb)
-    if verb_dict is None:
+    if verb_dict["error"] is True:
         raise HTTPException(status_code=404, detail="Verb not found in Bescherelle.")
 
     # create verb conjugations objects
