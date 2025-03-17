@@ -3,7 +3,7 @@ name = "frenchtrainer"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12.2"
 dependencies = [
     "alembic>=1.15.1",
     "asyncpg>=0.30.0",
@@ -18,9 +18,29 @@ dependencies = [
     "ollama>=0.4.7",
     "pandas>=2.2.3",
     "playsound3>=2.5.2",
+    "pytest>=8.3.5",
     "python-decouple>=3.8",
     "ruff>=0.9.7",
     "seaborn>=0.13.2",
     "sqlite-utils>=3.38",
     "sqlmodel>=0.0.22",
 ]
+
+# pyproject.toml
+[tool.pytest.ini_options]
+testpaths = [
+    "backend/tests",
+]
+pythonpath = [
+    ".",
+]
+
+[tool.uv]
+dev-dependencies = [
+    "ruff>=0.9.7",
+]
+
+# ruff linter
+[tool.ruff]
+# Set the maximum line length to 120.
+line-length = 120

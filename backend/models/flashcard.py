@@ -1,6 +1,7 @@
 from typing import Optional
 import datetime
 
+from pydantic import ConfigDict
 from sqlmodel import Field, SQLModel
 
 class Flashcard(SQLModel, table=True):
@@ -10,8 +11,7 @@ class Flashcard(SQLModel, table=True):
     last_chosen_date: Optional[datetime.datetime] = Field(default=None)  # Added last chosen date
 
 class ShowFlashcard(SQLModel):
+    model_config = ConfigDict(from_attributes = True) #tells pydantic to convert even non dict obj to json
+
     question: str
     answer: str
-
-    class Config(): #tells pydantic to convert even non dict obj to json
-        from_attributes = True

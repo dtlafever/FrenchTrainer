@@ -1,6 +1,7 @@
 from typing import Optional
 import datetime
 
+from pydantic import ConfigDict
 from sqlmodel import Field, SQLModel, Relationship
 
 # =============
@@ -231,6 +232,7 @@ class FrenchImperatifPasse(SQLModel, table=True):
 
 class FrenchVerb(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
+    english_text: str = Field(max_length=100)
     infinitif: str = Field(max_length=50)
     groupe: int = Field()  # TODO: only allow for values 1,2, or 3
     auxiliaire: str = Field(max_length=50)
@@ -354,6 +356,7 @@ class FrenchVerb(SQLModel, table=True):
     participe_passe: str
 
 class ShowFrenchVerb(SQLModel):
+    english_text: str
     infinitif: str
     groupe: int
     auxiliaire: str
@@ -376,8 +379,7 @@ class ShowFrenchVerb(SQLModel):
     subjonctif_plus_que_parfait: FrenchSubjonctifPlusQueParfait
     imperatif_passe: FrenchImperatifPasse
 
-    class Config(): #tells pydantic to convert even non dict obj to json
-        from_attributes = True
+    model_config = ConfigDict(from_attributes = True) #tells pydantic to convert even non dict obj to json
 
 
 def create_and_get_verb_conjugations(verb_dict: dict) -> dict:

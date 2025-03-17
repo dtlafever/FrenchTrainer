@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
+import re
 
 def replace_special_french_chars(string: str) -> str:
     """
@@ -124,6 +125,26 @@ def _extract_single_value(soup: BeautifulSoup, header_name: str, css_class_name:
 
     return value
 
+def is_error_not_found_verb(soup: BeautifulSoup, element_type: str,
+                       class_name: str,
+                       error_messages_to_search_for: list[str]) -> bool:
+    """Check if error message found in the soup object.
+
+    Args:
+        soup (BeautifulSoup): BeautifulSoup object containing verb information.
+        element_type (str): The type of element to check (e.g., 'div', 'h3').
+        class_name (str): The CSS class name of the element to check.
+
+    Returns:
+        bool: True if the error message found, False otherwise.
+    """
+    # confirm this verb exists on the website
+    div_contents = soup.find_all(element_type, class_=class_name)
+    for ele in div_contents:
+        if any([error_str in ele.text for error_str in error_messages_to_search_for]):
+            return True
+    return False
+
 def lookup_french_verbs_from_bescherelle(verb: str, debug=False) -> dict:
     """
     Look up French verbs from Bescherelle.
@@ -215,16 +236,15 @@ def lookup_french_verbs_from_bescherelle(verb: str, debug=False) -> dict:
     soup = BeautifulSoup(request.text, 'html.parser')
 
     # confirm this verb exists in the bescherelle database
-    div_contents = soup.find_all('div', class_='content')
     error_strs = [
         "La page demandée n'a pas pu être trouvée.",
         "Pas de résultat"
     ]
-    for ele in div_contents:
-        if any([error_str in ele.text for error_str in error_strs]):
+    if is_error_not_found_verb(soup, 'div', 'content', error_strs):
+        if debug:
             print(f"'{lower_verb}' does not exist in the Bescherelle database.")
-            verb_conj["error"] = True
-            return verb_conj
+        verb_conj["error"] = True
+        return verb_conj
     
     # TODO: error checking (or try catch) if something doesn't exist
 
@@ -286,8 +306,84 @@ def lookup_french_verbs_from_bescherelle(verb: str, debug=False) -> dict:
     # Return Our Verb
     return verb_conj
 
+def lookup_french_verbs_from_lefigaro(verb: str, debug=False) -> dict:
+    """
+    Look up French verbs from Le Figaro. Right now only works for english translation.
+    TODO: add conjugation information.
+
+    Args:
+        verb (str): The verb to look up.
+        debug (bool): Whether to print debug information.
+
+    Returns:
+        dict: The conjugation of the verb.
+        NOTE: the dict will have the key "error" = True if the verb does not exist in the Bescherelle database.
+    """
+    # replace special french characters with their ascii equivalent
+    lower_verb = verb.lower()
+    converted_verb = replace_special_french_chars(lower_verb)
+
+    verb_conj = {
+        # "groupe": 1,
+        # "auxiliaire": "",
+        # "temps_simples": {
+        #     "indicatif": {},
+        #     "conditionnel": {},
+        #     "subjonctif": {},
+        #     "imperatif": {},
+        #     "infinitif": "",
+        #     "participe": {},
+        # },
+        # "temps_composes": {
+        #     "indicatif": {},
+        #     "conditionnel": {},
+        #     "subjonctif": {},
+        #     "imperatif": {},
+        #     "infinitif": "",
+        #     "participe": {},
+        # },
+        "english_text": "",
+        "error": False
+    }
+
+    request = requests.get(f'https://leconjugueur.lefigaro.fr/french/verb/{converted_verb}.html')
+
+    # parse the html
+    soup = BeautifulSoup(request.text, 'html.parser')
+        
+    # confirm this verb exists in the bescherelle database
+    error_strs = [
+        "does not exist.",
+    ]
+    if is_error_not_found_verb(soup, 'h3', 'proposeVerbe', error_strs):
+        if debug:
+            print(f"'{lower_verb}' does not exist in the Le Figaro database.")
+        verb_conj["error"] = True
+        return verb_conj
+        
+    # regex that follows the pattern <br/>English translation: XXX<br/>
+    english_translation_pattern = r'<br/>English translation: (.*?)<br/>'
+    
+    # get english translation
+    verb_header_div_contents = soup.find_all('div', id="verbeNav")
+    for ele in verb_header_div_contents:
+        english_translation = re.search(english_translation_pattern, str(ele))
+        if english_translation:
+            translation = english_translation.group(1)
+            if debug:
+                print(f"English translation: {translation}")
+            verb_conj["english_text"] = translation
+        break
+
+    # Return Our Verb
+    return verb_conj
+
+
 if __name__ == '__main__':
 
     print(lookup_french_verbs_from_bescherelle('être', debug=True))
     # Uncomment to test with an invalid verb name
-    # print(lookup_french_verbs_from_bescherelle('BADNAME'))
+    print(lookup_french_verbs_from_bescherelle('BADNAME'))
+
+    print(lookup_french_verbs_from_lefigaro('être',debug=True))
+    print(lookup_french_verbs_from_lefigaro('BADNAME',debug=True))

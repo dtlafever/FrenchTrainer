@@ -4,7 +4,7 @@ from sqlalchemy import select
 
 from backend.models.verb import FrenchVerb, ShowFrenchVerb, create_and_get_verb_conjugations
 from backend.db.session import get_session
-from backend.utils import lookup_french_verbs_from_bescherelle
+from backend.utils import lookup_french_verbs_from_bescherelle, lookup_french_verbs_from_lefigaro
 from backend.db.verb import retrieve_verb_from_db, retrieve_all_verbs_from_db
 
 router = APIRouter(
@@ -29,6 +29,11 @@ def create_verb(verb: str, session: Session = Depends(get_session)):
     if verb_dict["error"] is True:
         raise HTTPException(status_code=404, detail="Verb not found in Bescherelle.")
 
+    # lookup verb on le figaro for english translation
+    verb_english_dict = lookup_french_verbs_from_lefigaro(verb)
+    if verb_english_dict["error"] is True:
+        raise HTTPException(status_code=404, detail="Verb not found in Le Figaro.")
+    
     # create verb conjugations objects
     verb_conj_objects = create_and_get_verb_conjugations(verb_dict)
     
@@ -37,6 +42,7 @@ def create_verb(verb: str, session: Session = Depends(get_session)):
         session.add(new_obj)
 
     new_verb = FrenchVerb(
+        english_text=verb_english_dict["english_text"],
         infinitif=verb_dict["temps_simples"]["infinitif"],
         groupe=verb_dict["groupe"],
         auxiliaire=verb_dict["auxiliaire"],

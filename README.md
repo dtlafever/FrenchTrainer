@@ -49,7 +49,7 @@ We now have successfully completed our first migration!
 ### Adding new migrations
 1. Create new migration file:
 `alembic revision --autogenerate -m "INSERT TASK HERE"`
-2. Make any changes needed for your database in your revision file stored in `backend/alembic/versions` folder. It should be named a revision number + the text your wrote when creating the revision.
+2. Make any changes needed for your database in your revision file stored in `backend/alembic/versions` folder. It should be named a revision number + the text your wrote when creating the revision. This should be done automatically using `-autogenerate`.
 3. Run the latest migration:
 `alembic upgrade head`
 
@@ -67,6 +67,13 @@ We now have successfully completed our first migration!
 
  ### Resources
  - [SQLModel + Alembic Setup](https://arunanshub.hashnode.dev/using-sqlmodel-with-alembic)
+
+## PyTesting
+
+## Linting
+`uv run ruff check   # Lint all files in the current directory.`
+`uv run ruff check --fix # Lint all files in the current directory and fix what we can.`
+`uv run ruff format  # Format all files in the current directory.`
 
 ## To Be Implemented
 1. ~~Add more granularity to storing french words in our database. For example, we want to store the various conjugations for a french verb~~
