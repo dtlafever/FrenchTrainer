@@ -87,7 +87,10 @@ We now have successfully completed our first migration!
  b. [CSRF Protection](https://www.stackhawk.com/blog/csrf-protection-in-fastapi/)
  c. [OAuth2](https://fastapi.tiangolo.com/advanced/security/oauth2-scopes/)
  d. [General Security Explanation and Best Practices](https://fastapi.tiangolo.com/tutorial/security/#fastapi-utilities)
-7. Py Testing
+7. ~~Py Testing~~
+  a. ~~Test Utils~~
+  b. ~~Test Flashcards~~
+  c. Test Verbs
 8. Linting
 9. Proper Frontend (React with Vite)
 
