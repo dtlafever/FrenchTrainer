@@ -1,0 +1,39 @@
+@import "tailwindcss";
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities; */
+
+/* Custom styles for the app */
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom classes for flashcards */
+@layer components {
+  .flip-card { 
+    @apply relative h-48 w-80 cursor-pointer;
+    perspective: 1000px; 
+  }
+  
+  .flip-card-inner { 
+    @apply relative w-full h-full transition-transform duration-600;
+    transform-style: preserve-3d; 
+  }
+  
+  .flip-card.flipped .flip-card-inner { 
+    transform: rotateY(180deg); 
+  }
+  
+  .flip-card-front, .flip-card-back { 
+    @apply absolute w-full h-full p-4 flex items-center justify-center;
+    backface-visibility: hidden; 
+  }
+  
+  .flip-card-back { 
+    transform: rotateY(180deg); 
+  }
+}

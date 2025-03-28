@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verb Flashcards</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .flip-card { perspective: 1000px; cursor: pointer; }
+        .flip-card-inner { position: relative; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.flip .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; }
+        .flip-card-back { transform: rotateY(180deg); }
+        
+        .conjugation-section {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+        
+        .conjugation-section.active {
+            max-height: 1500px;
+            transition: max-height 1s ease-in;
+        }
+        
+        .conjugation-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+        }
+        
+        .conjugation-table th, .conjugation-table td {
+            padding: 0.5rem;
+            text-align: left;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .conjugation-table th {
+            background-color: #f8fafc;
+        }
+        
+        .tense-group {
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-6">
+    <div class="container mx-auto">
+        <h1 class="text-3xl font-bold mb-6 text-center">Verb Flashcards</h1>
+        
+        <!-- Display options -->
+        <div class="mb-6 flex justify-center gap-4">
+            <button id="toggle-display" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                Show English First
+            </button>
+            <a href="/" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+                Back to Flashcards
+            </a>
+        </div>
+        
+        <!-- Display Verb Flashcard with Flip on Click -->
+        {% if verb %}
+        <div class="flex flex-col items-center relative">
+            <div class="flip-card bg-white rounded shadow mx-auto w-80 h-48" id="flashcard">
+                <!-- Play Audio Button -->
+                <button id="play-audio-btn" onclick="playAudio(event)" class="absolute top-2 right-2 bg-blue-500 hover:bg-blue-600 text-white p-2 rounded">🔊</button>
+                <div class="flip-card-inner h-full">
+                    <div class="flip-card-front flex items-center justify-center h-full p-4">
+                        <p id="front-text" class="text-xl">{{ verb.infinitif }}</p>
+                    </div>
+                    <div class="flip-card-back flex items-center justify-center h-full p-4">
+                        <div class="text-center">
+                            <p id="back-title" class="text-xl mb-1">{{ verb.infinitif }}</p>
+                            <p id="back-translation" class="text-xl font-semibold">{{ verb.english_text }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Conjugation Toggle Button -->
+            <button id="toggle-conjugations" class="mt-4 bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600">
+                Show Conjugations
+            </button>
+            
+            <!-- Next Flashcard Button -->
+            <button onclick="location.reload()" class="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                Next Verb
+            </button>
+        </div>
+        
+        <!-- Conjugation Details Section -->
+        <div id="conjugation-details" class="conjugation-section mt-8 bg-white rounded shadow p-6">
+            <h2 class="text-2xl font-bold mb-4">{{ verb.infinitif }} ({{ verb.english_text }})</h2>
+            <p class="mb-4">Group: {{ verb.groupe }} | Auxiliary: {{ verb.auxiliaire }}</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Present Tenses -->
+                <div class="tense-group">
+                    <h3 class="text-xl font-bold mb-2">Present</h3>
+                    <table class="conjugation-table">
+                        <tr>
+                            <th>Person</th>
+                            <th>Present (Présent)</th>
+                        </tr>
+                        <tr>
+                            <td>Je</td>
+                            <td>{{ verb.indicatif_present.je }}</td>
+                        </tr>
+                        <tr>
+                            <td>Tu</td>
+                            <td>{{ verb.indicatif_present.tu }}</td>
+                        </tr>
+                        <tr>
+                            <td>Il/Elle</td>
+                            <td>{{ verb.indicatif_present.il_elle }}</td>
+                        </tr>
+                        <tr>
+                            <td>Nous</td>
+                            <td>{{ verb.indicatif_present.nous }}</td>
+                        </tr>
+                        <tr>
+                            <td>Vous</td>
+                            <td>{{ verb.indicatif_present.vous }}</td>
+                        </tr>
+                        <tr>
+                            <td>Ils/Elles</td>
+                            <td>{{ verb.indicatif_present.ils_elles }}</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <!-- Imperfect Tense -->
+                <div class="tense-group">
+                    <h3 class="text-xl font-bold mb-2">Imperfect (Imparfait)</h3>
+                    <table class="conjugation-table">
+                        <tr>
+                            <th>Person</th>
+                            <th>Imperfect</th>
+                        </tr>
+                        <tr>
+                            <td>Je</td>
+                            <td>{{ verb.indicatif_imparfait.je }}</td>
+                        </tr>
+                        <tr>
+                            <td>Tu</td>
+                            <td>{{ verb.indicatif_imparfait.tu }}</td>
+                        </tr>
+                        <tr>
+                            <td>Il/Elle</td>
+                            <td>{{ verb.indicatif_imparfait.il_elle }}</td>
+                        </tr>
+                        <tr>
+                            <td>Nous</td>
+                            <td>{{ verb.indicatif_imparfait.nous }}</td>
+                        </tr>
+                        <tr>
+                            <td>Vous</td>
+                            <td>{{ verb.indicatif_imparfait.vous }}</td>
+                        </tr>
+                        <tr>
+                            <td>Ils/Elles</td>
+                            <td>{{ verb.indicatif_imparfait.ils_elles }}</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <!-- Future Simple -->
+                <div class="tense-group">
+                    <h3 class="text-xl font-bold mb-2">Future (Futur Simple)</h3>
+                    <table class="conjugation-table">
+                        <tr>
+                            <th>Person</th>
+                            <th>Future</th>
+                        </tr>
+                        <tr>
+                            <td>Je</td>
+                            <td>{{ verb.indicatif_futur_simple.je }}</td>
+                        </tr>
+                        <tr>
+                            <td>Tu</td>
+                            <td>{{ verb.indicatif_futur_simple.tu }}</td>
+                        </tr>
+                        <tr>
+                            <td>Il/Elle</td>
+                            <td>{{ verb.indicatif_futur_simple.il_elle }}</td>
+                        </tr>
+                        <tr>
+                            <td>Nous</td>
+                            <td>{{ verb.indicatif_futur_simple.nous }}</td>
+                        </tr>
+                        <tr>
+                            <td>Vous</td>
+                            <td>{{ verb.indicatif_futur_simple.vous }}</td>
+                        </tr>
+                        <tr>
+                            <td>Ils/Elles</td>
+                            <td>{{ verb.indicatif_futur_simple.ils_elles }}</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <!-- Passé Composé -->
+                <div class="tense-group">
+                    <h3 class="text-xl font-bold mb-2">Past Perfect (Passé Composé)</h3>
+                    <table class="conjugation-table">
+                        <tr>
+                            <th>Person</th>
+                            <th>Past Perfect</th>
+                        </tr>
+                        <tr>
+                            <td>Je</td>
+                            <td>{{ verb.indicatif_passe_compose.je }}</td>
+                        </tr>
+                        <tr>
+                            <td>Tu</td>
+                            <td>{{ verb.indicatif_passe_compose.tu }}</td>
+                        </tr>
+                        <tr>
+                            <td>Il/Elle</td>
+                            <td>{{ verb.indicatif_passe_compose.il_elle }}</td>
+                        </tr>
+                        <tr>
+                            <td>Nous</td>
+                            <td>{{ verb.indicatif_passe_compose.nous }}</td>
+                        </tr>
+                        <tr>
+                            <td>Vous</td>
+                            <td>{{ verb.indicatif_passe_compose.vous }}</td>
+                        </tr>
+                        <tr>
+                            <td>Ils/Elles</td>
+                            <td>{{ verb.indicatif_passe_compose.ils_elles }}</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <!-- Conditional Present -->
+                <div class="tense-group">
+                    <h3 class="text-xl font-bold mb-2">Conditional (Conditionnel Présent)</h3>
+                    <table class="conjugation-table">
+                        <tr>
+                            <th>Person</th>
+                            <th>Conditional</th>
+                        </tr>
+                        <tr>
+                            <td>Je</td>
+                            <td>{{ verb.conditionnel_present.je }}</td>
+                        </tr>
+                        <tr>
+                            <td>Tu</td>
+                            <td>{{ verb.conditionnel_present.tu }}</td>
+                        </tr>
+                        <tr>
+                            <td>Il/Elle</td>
+                            <td>{{ verb.conditionnel_present.il_elle }}</td>
+                        </tr>
+                        <tr>
+                            <td>Nous</td>
+                            <td>{{ verb.conditionnel_present.nous }}</td>
+                        </tr>
+                        <tr>
+                            <td>Vous</td>
+                            <td>{{ verb.conditionnel_present.vous }}</td>
+                        </tr>
+                        <tr>
+                            <td>Ils/Elles</td>
+                            <td>{{ verb.conditionnel_present.ils_elles }}</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <!-- Subjunctive Present -->
+                <div class="tense-group">
+                    <h3 class="text-xl font-bold mb-2">Subjunctive (Subjonctif Présent)</h3>
+                    <table class="conjugation-table">
+                        <tr>
+                            <th>Person</th>
+                            <th>Subjunctive</th>
+                        </tr>
+                        <tr>
+                            <td>Je</td>
+                            <td>{{ verb.subjonctif_present.je }}</td>
+                        </tr>
+                        <tr>
+                            <td>Tu</td>
+                            <td>{{ verb.subjonctif_present.tu }}</td>
+                        </tr>
+                        <tr>
+                            <td>Il/Elle</td>
+                            <td>{{ verb.subjonctif_present.il_elle }}</td>
+                        </tr>
+                        <tr>
+                            <td>Nous</td>
+                            <td>{{ verb.subjonctif_present.nous }}</td>
+                        </tr>
+                        <tr>
+                            <td>Vous</td>
+                            <td>{{ verb.subjonctif_present.vous }}</td>
+                        </tr>
+                        <tr>
+                            <td>Ils/Elles</td>
+                            <td>{{ verb.subjonctif_present.ils_elles }}</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <!-- Imperative Present -->
+                <div class="tense-group">
+                    <h3 class="text-xl font-bold mb-2">Imperative (Impératif)</h3>
+                    <table class="conjugation-table">
+                        <tr>
+                            <th>Person</th>
+                            <th>Imperative</th>
+                        </tr>
+                        <tr>
+                            <td>Tu</td>
+                            <td>{{ verb.imperatif_present.tu }}</td>
+                        </tr>
+                        <tr>
+                            <td>Nous</td>
+                            <td>{{ verb.imperatif_present.nous }}</td>
+                        </tr>
+                        <tr>
+                            <td>Vous</td>
+                            <td>{{ verb.imperatif_present.vous }}</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <!-- Participle Section -->
+                <div class="tense-group">
+                    <h3 class="text-xl font-bold mb-2">Participle</h3>
+                    <table class="conjugation-table">
+                        <tr>
+                            <th>Form</th>
+                            <th>Participle</th>
+                        </tr>
+                        <tr>
+                            <td>Present (Présent)</td>
+                            <td>{{ verb.participe_present }}</td>
+                        </tr>
+                        <tr>
+                            <td>Past (Passé)</td>
+                            <td>{{ verb.participe_passe }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <p class="text-center text-gray-600">No verb flashcard available.</p>
+        {% endif %}
+    </div>
+    
+    <script>
+        // Flashcard flip functionality
+        document.getElementById("flashcard")?.addEventListener("click", function(e) {
+            if (e.target.closest("#play-audio-btn")) return;
+            this.classList.toggle("flip");
+        });
+        
+        // Toggle between French and English on front
+        const toggleDisplay = document.getElementById("toggle-display");
+        const frontText = document.getElementById("front-text");
+        const backTitle = document.getElementById("back-title");
+        const backTranslation = document.getElementById("back-translation");
+        
+        let showEnglishFirst = false;
+        
+        toggleDisplay?.addEventListener("click", function() {
+            showEnglishFirst = !showEnglishFirst;
+            
+            if (showEnglishFirst) {
+                // Swap the text content
+                frontText.textContent = "{{ verb.english_text }}";
+                backTitle.textContent = "{{ verb.english_text }}";
+                backTranslation.textContent = "{{ verb.infinitif }}";
+                toggleDisplay.textContent = "Show French First";
+            } else {
+                // Restore original order
+                frontText.textContent = "{{ verb.infinitif }}";
+                backTitle.textContent = "{{ verb.infinitif }}";
+                backTranslation.textContent = "{{ verb.english_text }}";
+                toggleDisplay.textContent = "Show English First";
+            }
+            
+            // Reset the card to not flipped state
+            document.getElementById("flashcard").classList.remove("flip");
+        });
+        
+        // Toggle conjugation details
+        const toggleConjugations = document.getElementById("toggle-conjugations");
+        const conjugationDetails = document.getElementById("conjugation-details");
+        
+        toggleConjugations?.addEventListener("click", function() {
+            conjugationDetails.classList.toggle("active");
+            toggleConjugations.textContent = conjugationDetails.classList.contains("active") ? 
+                "Hide Conjugations" : "Show Conjugations";
+        });
+        
+        // Function to call the TTS endpoint without flipping the card
+        function playAudio(event) {
+            event.stopPropagation();
+            // Use the currently displayed text (either French or English depending on toggle state)
+            const text = document.querySelector("#flashcard .flip-card-front p").innerText;
+            // Set language based on which side is showing
+            const lang = showEnglishFirst ? "en-US" : "fr-FR";
+            fetch(`/api/speak?text=${encodeURIComponent(text)}&lang=${lang}`)
+                .then(response => response.json())
+                .then(data => console.log(data))
+                .catch(err => console.error(err));
+        }
+    </script>
+</body>
+</html>

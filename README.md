@@ -9,19 +9,38 @@
 - Local LLM chat (requires Ollama server running)
 - French Verb lookup and conjugations (passive voice only for the moment)
 
-## Libraries Used
-- FastAPI: our backend api
+### Backend
+- FastAPI: our backend API
 - SQLModel: how we define our Database Models
 - Alembic: handles Database migrations
 - Beautiful Soup: web scrapping for looking up verb tenses
 - Ollama and Chainlit: LLM library and LLM UI
 
+### Frontend
+- React: UI library
+- TypeScript: type safety
+- Tailwind CSS: styling
+- React Router: navigation
+- Axios: API requests
+
 ## Dev Installation
+
+### Backend
 1. Open a terminal and run:
 `cd backend`
 `uv run -- fastapi dev main.py`
 
 This will install all the packages required and start up the fastapi server. You should be able to access the fastapi server at [http://127.0.0.1:8000](http://127.0.0.1:8000).
+
+### Frontend
+1. Open a new terminal window and run:
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+This will start the React development server. You can access the frontend at [http://localhost:5173](http://localhost:5173).
 
 2. Install Ollama (if you want LLMs)
 - [Ollama](https://ollama.com/download) should be installed and running
@@ -69,6 +88,7 @@ We now have successfully completed our first migration!
  - [SQLModel + Alembic Setup](https://arunanshub.hashnode.dev/using-sqlmodel-with-alembic)
 
 ## PyTesting
+`pytest`
 
 ## Linting
 `uv run ruff check   # Lint all files in the current directory.`
@@ -92,7 +112,7 @@ We now have successfully completed our first migration!
   b. ~~Test Flashcards~~
   c. Test Verbs
 8. Linting
-9. Proper Frontend (React with Vite)
+9. ~~Proper Frontend (React with Vite)~~
 
  ## Flashcards to be added
  - Days of the week

@@ -1,6 +1,8 @@
-from fastapi import APIRouter, status, Depends, HTTPException
+from fastapi import APIRouter, status, Depends, HTTPException, Request
+from fastapi.templating import Jinja2Templates
 from sqlmodel import Session
 from sqlalchemy import select
+import random
 
 from backend.models.verb import FrenchVerb, ShowFrenchVerb, create_and_get_verb_conjugations
 from backend.db.session import get_session
@@ -13,6 +15,12 @@ router = APIRouter(
     dependencies=[], # TODO: add any tokens are security we might need
     responses={404: {"description": "Not found"}},
 )
+
+templates = Jinja2Templates(directory="templates")
+
+# =============================
+# API Routes (returning JSON)
+# =============================
 
 @router.post("/", response_model=ShowFrenchVerb, status_code=status.HTTP_201_CREATED)
 def create_verb(verb: str, session: Session = Depends(get_session)):
@@ -80,6 +88,47 @@ def read_verbs(skip: int = 0, limit: int = 10, session: Session = Depends(get_se
     verbs = retrieve_all_verbs_from_db(skip, limit, session)
     return verbs
 
+# @router.get("/{verb_id}", response_model=ShowFrenchVerb)
+# def read_verb(verb_id: int, session: Session = Depends(get_session)):
+#     verb = retrieve_verb_from_db(verb_id, session)
+#     if verb is None:
+#         raise HTTPException(status_code=404, detail="Verb not found")
+#     return verb
+
+# =============================
+# Web Routes (returning HTML)
+# =============================
+
+# @router.get("/flashcards", include_in_schema=False)
+# async def verb_flashcards(request: Request, session: Session = Depends(get_session)):
+#     """Display a random verb as a flashcard with conjugations"""
+#     verbs = session.exec(select(FrenchVerb)).all()
+#     verb = random.choice(verbs)[0] if verbs else None
+
+#     context = {"request": request, "verb": verb}
+#     return templates.TemplateResponse("flashcards/verb_flashcard.html", context)
+
+@router.get("/flashcards", include_in_schema=False)
+async def verb_flashcards(request: Request, session: Session = Depends(get_session)):
+    """Display a random verb as a flashcard with conjugations"""
+    verbs = session.exec(select(FrenchVerb)).all()
+    verb = random.choice(verbs)[0] if verbs else None
+
+    context = {"request": request, "verb": verb}
+    return templates.TemplateResponse("flashcards/verb_flashcard.html", context)
+
+@router.get("/flashcards/{verb_id}", include_in_schema=False)
+async def verb_flashcard_by_id(verb_id: int, request: Request, session: Session = Depends(get_session)):
+    """Display a specific verb as a flashcard with conjugations"""
+    verb = retrieve_verb_from_db(verb_id, session)
+    
+    if verb is None:
+        raise HTTPException(status_code=404, detail="Verb not found")
+    
+    context = {"request": request, "verb": verb}
+    return templates.TemplateResponse("flashcards/verb_flashcard.html", context)
+
+# Important: This route needs to be AFTER the /flashcards routes to prevent conflicts
 @router.get("/{verb_id}", response_model=ShowFrenchVerb)
 def read_verb(verb_id: int, session: Session = Depends(get_session)):
     verb = retrieve_verb_from_db(verb_id, session)

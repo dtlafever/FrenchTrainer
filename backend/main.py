@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request, Depends, HTTPException, status
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse
+from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Session
 from sqlalchemy import select
 
@@ -24,6 +25,16 @@ async def lifespan(app: FastAPI):
     # Shutdown functions go here
 
 app = FastAPI(lifespan=lifespan)
+
+# Add CORS middleware to allow requests from the React frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],  # Vite default port
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 templates = Jinja2Templates(directory="templates")
 
 # mount the chainlit LLM to its own path
