@@ -64,7 +64,8 @@ export interface FrenchVerb {
 // API functions
 export const getRandomFlashcard = async (): Promise<Flashcard> => {
   try {
-    const response = await api.get('/');
+    const response = await api.get('/flashcards/random');
+    console.log(response.data)
     return response.data.flashcard;
   } catch (error) {
     console.error('Error fetching random flashcard:', error);
