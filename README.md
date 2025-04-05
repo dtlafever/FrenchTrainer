@@ -102,7 +102,7 @@ We now have successfully completed our first migration!
 3. Show various forms of a given word in the flash cards (i.e. third person singular verbs, the feminine version of a noun, etc).
 4. Implement a RAG to use with our french database to practice using the words in sentences with our LLM.
 5. add autocomplete/fill for french words you are adding to your flashcards from some external database or api. This will require using something like a Trie data structure.
-6. ~Be able to add or search a verb using  tense. That way I dont need to know the infinitive.~
+6. ~~Be able to add or search a verb using  tense. That way I dont need to know the infinitive.~~
 7. Implement proper security
  a. (JWT)[https://jwt.io/introduction]
  b. [CSRF Protection](https://www.stackhawk.com/blog/csrf-protection-in-fastapi/)
