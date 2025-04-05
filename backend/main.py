@@ -1,17 +1,11 @@
-from fastapi import FastAPI, Request, Depends, HTTPException, status
-from fastapi.templating import Jinja2Templates
-from fastapi.responses import RedirectResponse
-from sqlmodel import Session
-from sqlalchemy import select
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 
 from contextlib import asynccontextmanager
-import random
 
-from backend.db.session import create_db_and_tables, get_session
+from backend.db.session import create_db_and_tables
 from backend.routers.base import api_router
 from backend import tts
-
-from backend.models.flashcard import Flashcard
 
 from chainlit.utils import mount_chainlit
 
@@ -24,27 +18,18 @@ async def lifespan(app: FastAPI):
     # Shutdown functions go here
 
 app = FastAPI(lifespan=lifespan)
-templates = Jinja2Templates(directory="templates")
+
+# Add CORS middleware to allow requests from the React frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],  # Vite default port
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # mount the chainlit LLM to its own path
 mount_chainlit(app=app, target="cl_app.py", path="/chat")
-
-@app.get("/")
-async def index(request: Request, session: Session = Depends(get_session)):
-    flashcards = session.exec(select(Flashcard)).all()
-    flashcard = random.choice(flashcards)[0] if flashcards else None
-    context = {"request": request, "flashcard": flashcard}
-    return templates.TemplateResponse("flashcards/index.html", context)
-
-@app.post("/create_flashcard")
-async def create_flashcard_from_form(request: Request, session: Session = Depends(get_session)):
-    form = await request.form()
-    question = form.get("question")
-    answer = form.get("answer")
-    new_flashcard = Flashcard(question=question, answer=answer)
-    session.add(new_flashcard)
-    session.commit()
-    return RedirectResponse(url="/", status_code=303)
 
 @app.get("/api/speak")
 async def api_speak(text: str, lang: str = "fr-FR"):

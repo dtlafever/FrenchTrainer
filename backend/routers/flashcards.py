@@ -3,7 +3,7 @@ from sqlmodel import Session
 
 from backend.models.flashcard import Flashcard, ShowFlashcard
 from backend.db.session import get_session
-from backend.db.flashcard import retrieve_flashcard_from_db, retrieve_all_flashcards_from_db, create_flashcard_in_db
+from backend.db.flashcard import retrieve_flashcard_from_db, retrieve_all_flashcards_from_db, create_flashcard_in_db, retrieve_random_flashcard_from_db
 
 router = APIRouter(
     prefix="/flashcards",
@@ -21,6 +21,14 @@ def create_flashcard(flashcard: Flashcard, session: Session = Depends(get_sessio
 def read_flashcards(skip: int = 0, limit: int = 10, session: Session = Depends(get_session)):
     flashcards = retrieve_all_flashcards_from_db(skip, limit, session)
     return flashcards
+
+@router.get("/random", response_model=ShowFlashcard)
+def read_random_flashcard(session: Session = Depends(get_session)):
+    flashcard = retrieve_random_flashcard_from_db(session)
+    # TODO: double check if this is the right way to handle this. Maybe it should always return a flashcard?
+    if flashcard is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No flashcards found")
+    return flashcard
 
 @router.get("/{flashcard_id}", response_model=ShowFlashcard)
 def read_flashcard(flashcard_id: int, session: Session = Depends(get_session)):

@@ -16,14 +16,28 @@
 <body class="bg-gray-100 min-h-screen p-6">
     <div class="container mx-auto">
         <h1 class="text-3xl font-bold mb-6 text-center">Flashcards</h1>
+
+        <!-- Navigation Links -->
+        <div class="mb-6 flex justify-center gap-4">
+            <a href="/verbs/flashcards" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                Verb Flashcards
+            </a>
+            <a href="/chat" class="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600">
+                Chat with LLM
+            </a>
+        </div>
+
         <!-- Flashcard Form Component -->
         {% include "flashcards/_flashcard_form.html" %}
+
         <!-- Display Random Flashcard with Flip on Click -->
         {% if flashcard %}
         <div class="flex flex-col items-center relative">
             <div class="flip-card bg-white rounded shadow mx-auto w-80 h-48" id="flashcard">
-                <!-- Play Audio Button -->
-            <button id="play-audio-btn" onclick="playAudio(event)" class="absolute top-2 right-2 bg-blue-500 hover:bg-blue-600 text-white p-2 rounded">🔊</button>
+            <!-- Play Audio Button - Moved outside the click event -->
+                <div class="absolute top-2 right-2 z-10">
+                    <button id="play-audio-btn" class="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded">🔊</button>
+                </div>
                 <div class="flip-card-inner h-full">
                     <div class="flip-card-front flex items-center justify-center h-full p-4">
                         <p class="text-xl">{{ flashcard.question }}</p>
@@ -43,21 +57,65 @@
         <p class="text-center text-gray-600">No flashcards available.</p>
         {% endif %}
     </div>
+
+    <!-- Add Text field with button that, when pressed, will call he TTS API and say the text-->
+    <div class="mt-6">
+        <h2 class="text-2xl font-bold mb-4 text-center">Text-to-Speech</h2>
+        <form id="tts-form" class="flex justify-center">
+            <input type="text" id="tts-text" class="border border-gray-300 rounded p-2 w-1/2" placeholder="Enter text to speak">
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 ml-2">Speak</button>
+        </form>
+    </div>
     <script>
-        // Updated flashcard click event to ignore clicks from the audio button.
-        document.getElementById("flashcard")?.addEventListener("click", function(e) {
-            if (e.target.closest("#play-audio-btn")) return;
-            this.classList.toggle("flip");
+        // Add event listener for the TTS form submission
+        document.getElementById("tts-form").addEventListener("submit", function(e) {
+            e.preventDefault(); // Prevent default form submission
+            
+            const text = document.getElementById("tts-text").value;
+            if (text) {
+                // Call the TTS API
+                fetch(`/api/speak?text=${encodeURIComponent(text)}`)
+                    .then(response => response.json())
+                    .then(data => console.log("Audio played successfully"))
+                    .catch(err => console.error("Error playing audio:", err));
+            }
         });
-        // function to call the TTS endpoint without flipping the card
-        function playAudio(event) {
-            event.stopPropagation();
-            const text = document.querySelector("#flashcard .flip-card-front p").innerText;
-            fetch(`/api/speak?text=${encodeURIComponent(text)}`)
-                .then(response => response.json())
-                .then(data => console.log(data))
-                .catch(err => console.error(err));
-        }
+    </script>
+    <script>
+        // Add event listeners when the DOM is fully loaded
+        document.addEventListener("DOMContentLoaded", function() {
+            // Get references to elements
+            const flashcard = document.getElementById("flashcard");
+            const audioButton = document.getElementById("play-audio-btn");
+            
+            // Separate event for the flashcard flip
+            if (flashcard) {
+                flashcard.addEventListener("click", function(e) {
+                    // Don't flip the card if clicked on the audio button
+                    if (e.target.id === "play-audio-btn" || e.target.closest("#play-audio-btn")) {
+                        return;
+                    }
+                    this.classList.toggle("flip");
+                });
+            }
+            
+            // Separate event for the audio button
+            if (audioButton) {
+                audioButton.addEventListener("click", function(e) {
+                    e.stopPropagation(); // Stop event from bubbling up
+                    e.preventDefault();  // Prevent default behavior
+                    
+                    // Get the text to speak from the front of the card
+                    const text = document.querySelector("#flashcard .flip-card-front p").innerText;
+                    
+                    // Call the TTS API
+                    fetch(`/api/speak?text=${encodeURIComponent(text)}`)
+                        .then(response => response.json())
+                        .then(data => console.log("Audio played successfully"))
+                        .catch(err => console.error("Error playing audio:", err));
+                });
+            }
+        });
     </script>
 </body>
 </html>
