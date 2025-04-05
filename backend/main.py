@@ -1,18 +1,11 @@
-from fastapi import FastAPI, Request, Depends, HTTPException, status
-from fastapi.templating import Jinja2Templates
-from fastapi.responses import RedirectResponse
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from sqlmodel import Session
-from sqlalchemy import select
 
 from contextlib import asynccontextmanager
-import random
 
-from backend.db.session import create_db_and_tables, get_session
+from backend.db.session import create_db_and_tables
 from backend.routers.base import api_router
 from backend import tts
-
-from backend.models.flashcard import Flashcard
 
 from chainlit.utils import mount_chainlit
 
