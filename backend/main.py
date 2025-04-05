@@ -35,27 +35,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-templates = Jinja2Templates(directory="templates")
-
 # mount the chainlit LLM to its own path
 mount_chainlit(app=app, target="cl_app.py", path="/chat")
-
-@app.get("/")
-async def index(request: Request, session: Session = Depends(get_session)):
-    flashcards = session.exec(select(Flashcard)).all()
-    flashcard = random.choice(flashcards)[0] if flashcards else None
-    context = {"request": request, "flashcard": flashcard}
-    return templates.TemplateResponse("flashcards/index.html", context)
-
-@app.post("/create_flashcard")
-async def create_flashcard_from_form(request: Request, session: Session = Depends(get_session)):
-    form = await request.form()
-    question = form.get("question")
-    answer = form.get("answer")
-    new_flashcard = Flashcard(question=question, answer=answer)
-    session.add(new_flashcard)
-    session.commit()
-    return RedirectResponse(url="/", status_code=303)
 
 @app.get("/api/speak")
 async def api_speak(text: str, lang: str = "fr-FR"):

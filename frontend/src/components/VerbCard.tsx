@@ -141,25 +141,25 @@ const VerbCard: React.FC<VerbCardProps> = ({ verb, onNext }) => {
             {/* Imperative Present */}
             <div className="mb-6">
               <h3 className="text-xl font-bold mb-2">Imperative (Impératif)</h3>
-              <table className="w-full border-collapse">
+              <table className="w-full border-collapse bg-indigo-50">
                 <thead>
                   <tr>
-                    <th className="border border-gray-200 p-2 bg-gray-50 text-left">Person</th>
-                    <th className="border border-gray-200 p-2 bg-gray-50 text-left">Imperative</th>
+                    <th className="border border-indigo-200 p-2 bg-indigo-100 text-left">Person</th>
+                    <th className="border border-indigo-200 p-2 bg-indigo-100 text-left">Imperative</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td className="border border-gray-200 p-2">Tu</td>
-                    <td className="border border-gray-200 p-2">{verb.imperatif_present.tu}</td>
+                    <td className="border border-indigo-200 p-2">Tu</td>
+                    <td className="border border-indigo-200 p-2">{verb.imperatif_present.tu}</td>
                   </tr>
                   <tr>
-                    <td className="border border-gray-200 p-2">Nous</td>
-                    <td className="border border-gray-200 p-2">{verb.imperatif_present.nous}</td>
+                    <td className="border border-indigo-200 p-2">Nous</td>
+                    <td className="border border-indigo-200 p-2">{verb.imperatif_present.nous}</td>
                   </tr>
                   <tr>
-                    <td className="border border-gray-200 p-2">Vous</td>
-                    <td className="border border-gray-200 p-2">{verb.imperatif_present.vous}</td>
+                    <td className="border border-indigo-200 p-2">Vous</td>
+                    <td className="border border-indigo-200 p-2">{verb.imperatif_present.vous}</td>
                   </tr>
                 </tbody>
               </table>
@@ -168,21 +168,21 @@ const VerbCard: React.FC<VerbCardProps> = ({ verb, onNext }) => {
             {/* Participle Section */}
             <div className="mb-6">
               <h3 className="text-xl font-bold mb-2">Participle</h3>
-              <table className="w-full border-collapse">
+              <table className="w-full border-collapse bg-cyan-50">
                 <thead>
                   <tr>
-                    <th className="border border-gray-200 p-2 bg-gray-50 text-left">Form</th>
-                    <th className="border border-gray-200 p-2 bg-gray-50 text-left">Participle</th>
+                    <th className="border border-cyan-200 p-2 bg-cyan-100 text-left">Form</th>
+                    <th className="border border-cyan-200 p-2 bg-cyan-100 text-left">Participle</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td className="border border-gray-200 p-2">Present (Présent)</td>
-                    <td className="border border-gray-200 p-2">{verb.participe_present}</td>
+                    <td className="border border-cyan-200 p-2">Present (Présent)</td>
+                    <td className="border border-cyan-200 p-2">{verb.participe_present}</td>
                   </tr>
                   <tr>
-                    <td className="border border-gray-200 p-2">Past (Passé)</td>
-                    <td className="border border-gray-200 p-2">{verb.participe_passe}</td>
+                    <td className="border border-cyan-200 p-2">Past (Passé)</td>
+                    <td className="border border-cyan-200 p-2">{verb.participe_passe}</td>
                   </tr>
                 </tbody>
               </table>
@@ -208,40 +208,57 @@ interface ConjugationTableProps {
 }
 
 const ConjugationTable: React.FC<ConjugationTableProps> = ({ title, conjugation }) => {
+  // Define color scheme based on tense title
+  const getTenseColor = (title: string) => {
+    const colorMap: { [key: string]: string } = {
+      "Present (Présent)": "bg-blue-50 border-blue-200",
+      "Imperfect (Imparfait)": "bg-green-50 border-green-200",
+      "Future (Futur Simple)": "bg-purple-50 border-purple-200",
+      "Past Perfect (Passé Composé)": "bg-amber-50 border-amber-200",
+      "Conditional (Conditionnel Présent)": "bg-rose-50 border-rose-200",
+      "Subjunctive (Subjonctif Présent)": "bg-teal-50 border-teal-200",
+    };
+    
+    return colorMap[title] || "bg-gray-50 border-gray-200";
+  };
+  
+  const baseColor = getTenseColor(title);
+  const headerColor = baseColor.replace("-50", "-100");
+  
   return (
     <div className="mb-6">
       <h3 className="text-xl font-bold mb-2">{title}</h3>
-      <table className="w-full border-collapse">
+      <table className={`w-full border-collapse ${baseColor}`}>
         <thead>
           <tr>
-            <th className="border border-gray-200 p-2 bg-gray-50 text-left">Person</th>
-            <th className="border border-gray-200 p-2 bg-gray-50 text-left">{title}</th>
+            <th className={`border ${headerColor} p-2 text-left font-semibold`}>Person</th>
+            <th className={`border ${headerColor} p-2 text-left font-semibold`}>{title}</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td className="border border-gray-200 p-2">Je</td>
-            <td className="border border-gray-200 p-2">{conjugation.je}</td>
+            <td className={`border ${baseColor} p-2`}>Je</td>
+            <td className={`border ${baseColor} p-2`}>{conjugation.je}</td>
           </tr>
           <tr>
-            <td className="border border-gray-200 p-2">Tu</td>
-            <td className="border border-gray-200 p-2">{conjugation.tu}</td>
+            <td className={`border ${baseColor} p-2`}>Tu</td>
+            <td className={`border ${baseColor} p-2`}>{conjugation.tu}</td>
           </tr>
           <tr>
-            <td className="border border-gray-200 p-2">Il/Elle</td>
-            <td className="border border-gray-200 p-2">{conjugation.il_elle}</td>
+            <td className={`border ${baseColor} p-2`}>Il/Elle</td>
+            <td className={`border ${baseColor} p-2`}>{conjugation.il_elle}</td>
           </tr>
           <tr>
-            <td className="border border-gray-200 p-2">Nous</td>
-            <td className="border border-gray-200 p-2">{conjugation.nous}</td>
+            <td className={`border ${baseColor} p-2`}>Nous</td>
+            <td className={`border ${baseColor} p-2`}>{conjugation.nous}</td>
           </tr>
           <tr>
-            <td className="border border-gray-200 p-2">Vous</td>
-            <td className="border border-gray-200 p-2">{conjugation.vous}</td>
+            <td className={`border ${baseColor} p-2`}>Vous</td>
+            <td className={`border ${baseColor} p-2`}>{conjugation.vous}</td>
           </tr>
           <tr>
-            <td className="border border-gray-200 p-2">Ils/Elles</td>
-            <td className="border border-gray-200 p-2">{conjugation.ils_elles}</td>
+            <td className={`border ${baseColor} p-2`}>Ils/Elles</td>
+            <td className={`border ${baseColor} p-2`}>{conjugation.ils_elles}</td>
           </tr>
         </tbody>
       </table>

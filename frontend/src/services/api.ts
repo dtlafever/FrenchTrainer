@@ -61,12 +61,13 @@ export interface FrenchVerb {
   imperatif_passe: ImperativeConjugation;
 }
 
-// API functions
+// ==========
+// FlashCards
+// ==========
 export const getRandomFlashcard = async (): Promise<Flashcard> => {
   try {
     const response = await api.get('/flashcards/random');
-    console.log(response.data)
-    return response.data.flashcard;
+    return response.data;
   } catch (error) {
     console.error('Error fetching random flashcard:', error);
     throw error;
@@ -74,15 +75,10 @@ export const getRandomFlashcard = async (): Promise<Flashcard> => {
 };
 
 export const createFlashcard = async (flashcard: Omit<Flashcard, 'id'>): Promise<Flashcard> => {
-  try {
-    const formData = new FormData();
-    formData.append('question', flashcard.question);
-    formData.append('answer', flashcard.answer);
-    
-    const response = await api.post('/create_flashcard', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+  try {    
+    const response = await api.post('/flashcards/', {
+      question: flashcard.question,
+      answer: flashcard.answer
     });
     return response.data;
   } catch (error) {
@@ -91,11 +87,14 @@ export const createFlashcard = async (flashcard: Omit<Flashcard, 'id'>): Promise
   }
 };
 
+// ==========
+// Verbs
+// ==========
+
 export const getRandomVerb = async (): Promise<FrenchVerb> => {
   try {
-    const response = await api.get('/verbs/flashcards');
-    console.log(response.data.verb);
-    return response.data.verb;
+    const response = await api.get('/verbs/random');
+    return response.data;
   } catch (error) {
     console.error('Error fetching random verb:', error);
     throw error;
@@ -104,8 +103,8 @@ export const getRandomVerb = async (): Promise<FrenchVerb> => {
 
 export const getVerbById = async (id: number): Promise<FrenchVerb> => {
   try {
-    const response = await api.get(`/verbs/flashcards/${id}`);
-    return response.data.verb;
+    const response = await api.get(`/verbs/${id}`);
+    return response.data;
   } catch (error) {
     console.error(`Error fetching verb with id ${id}:`, error);
     throw error;
@@ -114,8 +113,11 @@ export const getVerbById = async (id: number): Promise<FrenchVerb> => {
 
 export const createVerb = async (verb: string): Promise<FrenchVerb> => {
   try {
+    // Null body and verb as query parameter
     const response = await api.post('/verbs/', null, {
-      params: { verb },
+      params: {
+        verb: verb
+      }
     });
     return response.data;
   } catch (error) {
@@ -123,6 +125,24 @@ export const createVerb = async (verb: string): Promise<FrenchVerb> => {
     throw error;
   }
 };
+
+export const searchVerb = async (verb: string): Promise<FrenchVerb> => {
+  try {
+    const response = await api.get('/verbs/search', {
+      params: {
+        verb: verb
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error searching for verb:', error);
+    throw error;
+  }
+};
+
+// ==========
+// Miscellaneous
+// ==========
 
 export const playAudio = async (text: string, lang: string = 'fr-FR'): Promise<void> => {
   try {

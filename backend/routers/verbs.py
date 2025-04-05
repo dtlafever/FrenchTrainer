@@ -1,13 +1,10 @@
-from fastapi import APIRouter, status, Depends, HTTPException, Request
-from fastapi.templating import Jinja2Templates
+from fastapi import APIRouter, status, Depends, HTTPException
 from sqlmodel import Session
-from sqlalchemy import select
-import random
 
-from backend.models.verb import FrenchVerb, ShowFrenchVerb, create_and_get_verb_conjugations
+from backend.models.verb import ShowFrenchVerb, create_and_get_verb_conjugations
 from backend.db.session import get_session
 from backend.utils import lookup_french_verbs_from_bescherelle, lookup_french_verbs_from_lefigaro
-from backend.db.verb import retrieve_verb_from_db, retrieve_all_verbs_from_db
+from backend.db.verb import retrieve_verb_from_db, retrieve_all_verbs_from_db, retrieve_random_verb_flashcard_from_db, retrieve_verb_from_db_by_verb, create_verb_with_dict_in_db
 
 router = APIRouter(
     prefix="/verbs",
@@ -16,8 +13,6 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-templates = Jinja2Templates(directory="templates")
-
 # =============================
 # API Routes (returning JSON)
 # =============================
@@ -25,9 +20,7 @@ templates = Jinja2Templates(directory="templates")
 @router.post("/", response_model=ShowFrenchVerb, status_code=status.HTTP_201_CREATED)
 def create_verb(verb: str, session: Session = Depends(get_session)):
     # First check if verb exists in database
-    existing_verb = session.exec(
-        select(FrenchVerb).where(FrenchVerb.infinitif == verb)
-    ).first()
+    existing_verb = retrieve_verb_from_db_by_verb(verb, session)
 
     if existing_verb:
         return existing_verb
@@ -35,51 +28,20 @@ def create_verb(verb: str, session: Session = Depends(get_session)):
     # If not in database, lookup in Bescherelle
     verb_dict = lookup_french_verbs_from_bescherelle(verb)
     if verb_dict["error"] is True:
-        raise HTTPException(status_code=404, detail="Verb not found in Bescherelle.")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Verb not found in Bescherelle.")
 
     # lookup verb on le figaro for english translation
     verb_english_dict = lookup_french_verbs_from_lefigaro(verb)
     if verb_english_dict["error"] is True:
-        raise HTTPException(status_code=404, detail="Verb not found in Le Figaro.")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Verb not found in Le Figaro.")
     
     # create verb conjugations objects
     verb_conj_objects = create_and_get_verb_conjugations(verb_dict)
     
-    # Add the verb conjugations to the database
-    for key, new_obj in verb_conj_objects.items():
-        session.add(new_obj)
-
-    new_verb = FrenchVerb(
-        english_text=verb_english_dict["english_text"],
-        infinitif=verb_dict["temps_simples"]["infinitif"],
-        groupe=verb_dict["groupe"],
-        auxiliaire=verb_dict["auxiliaire"],
-        participe_present=verb_dict["temps_simples"]["participe"],
-        participe_passe=verb_dict["temps_composes"]["participe"],
-        indicatif_present=verb_conj_objects["indicatif_present"],
-        indicatif_imparfait=verb_conj_objects["indicatif_imparfait"],
-        indicatif_passe_simple=verb_conj_objects["indicatif_passe_simple"],
-        indicatif_futur_simple=verb_conj_objects["indicatif_futur_simple"],
-        conditionnel_present=verb_conj_objects["conditionnel_present"],
-        subjonctif_present=verb_conj_objects["subjonctif_present"],
-        subjonctif_imparfait=verb_conj_objects["subjonctif_imparfait"],
-        imperatif_present=verb_conj_objects["imperatif_present"],
-        indicatif_passe_compose=verb_conj_objects["indicatif_passe_compose"],
-        indicatif_plus_que_parfait=verb_conj_objects["indicatif_plus_que_parfait"],
-        indicatif_passe_anterieur=verb_conj_objects["indicatif_passe_anterieur"],
-        indicatif_futur_anterieur=verb_conj_objects["indicatif_futur_anterieur"],
-        conditionnel_passe=verb_conj_objects["conditionnel_passe"],
-        subjonctif_passe=verb_conj_objects["subjonctif_passe"],
-        subjonctif_plus_que_parfait=verb_conj_objects["subjonctif_plus_que_parfait"],
-        imperatif_passe=verb_conj_objects["imperatif_passe"],
-    )
-
-    session.add(new_verb)
-    session.commit()
-
-    for key, new_obj in verb_conj_objects.items():
-        session.refresh(new_obj)
-    session.refresh(new_verb)
+    # Create the verb in the database with all its conjugations
+    new_verb = create_verb_with_dict_in_db(verb_dict, verb_english_dict, verb_conj_objects, session)
+    if new_verb is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Verb not created.")
     
     return new_verb
 
@@ -88,47 +50,28 @@ def read_verbs(skip: int = 0, limit: int = 10, session: Session = Depends(get_se
     verbs = retrieve_all_verbs_from_db(skip, limit, session)
     return verbs
 
-# @router.get("/{verb_id}", response_model=ShowFrenchVerb)
-# def read_verb(verb_id: int, session: Session = Depends(get_session)):
-#     verb = retrieve_verb_from_db(verb_id, session)
-#     if verb is None:
-#         raise HTTPException(status_code=404, detail="Verb not found")
-#     return verb
+@router.get("/search", response_model=ShowFrenchVerb)
+def search_verbs(verb: str, session: Session = Depends(get_session)):
+    """Search for a verb by its infinitive form"""
+    verb = retrieve_verb_from_db_by_verb(verb, session)
+
+    if verb is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Verb not found")
+
+    return verb
 
 # =============================
 # Web Routes (returning HTML)
 # =============================
 
-# @router.get("/flashcards", include_in_schema=False)
-# async def verb_flashcards(request: Request, session: Session = Depends(get_session)):
-#     """Display a random verb as a flashcard with conjugations"""
-#     verbs = session.exec(select(FrenchVerb)).all()
-#     verb = random.choice(verbs)[0] if verbs else None
+@router.get("/random", response_model=ShowFrenchVerb)
+def read_random_flashcard(session: Session = Depends(get_session)):
+    flashcard = retrieve_random_verb_flashcard_from_db(session)
+    # TODO: double check if this is the right way to handle this. Maybe it should always return a flashcard?
+    if flashcard is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No flashcards found")
+    return flashcard
 
-#     context = {"request": request, "verb": verb}
-#     return templates.TemplateResponse("flashcards/verb_flashcard.html", context)
-
-@router.get("/flashcards", include_in_schema=False)
-async def verb_flashcards(request: Request, session: Session = Depends(get_session)):
-    """Display a random verb as a flashcard with conjugations"""
-    verbs = session.exec(select(FrenchVerb)).all()
-    verb = random.choice(verbs)[0] if verbs else None
-
-    context = {"request": request, "verb": verb}
-    return templates.TemplateResponse("flashcards/verb_flashcard.html", context)
-
-@router.get("/flashcards/{verb_id}", include_in_schema=False)
-async def verb_flashcard_by_id(verb_id: int, request: Request, session: Session = Depends(get_session)):
-    """Display a specific verb as a flashcard with conjugations"""
-    verb = retrieve_verb_from_db(verb_id, session)
-    
-    if verb is None:
-        raise HTTPException(status_code=404, detail="Verb not found")
-    
-    context = {"request": request, "verb": verb}
-    return templates.TemplateResponse("flashcards/verb_flashcard.html", context)
-
-# Important: This route needs to be AFTER the /flashcards routes to prevent conflicts
 @router.get("/{verb_id}", response_model=ShowFrenchVerb)
 def read_verb(verb_id: int, session: Session = Depends(get_session)):
     verb = retrieve_verb_from_db(verb_id, session)
