@@ -15,6 +15,7 @@ dependencies = [
     "marimo>=0.11.8",
     "marisa-trie>=1.2.1",
     "matplotlib>=3.10.0",
+    "mcp[cli]>=1.6.0",
     "ollama>=0.4.7",
     "pandas>=2.2.3",
     "playsound3>=2.5.2",

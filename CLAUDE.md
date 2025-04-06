@@ -11,8 +11,9 @@ A fullstack python and Typescript project consisting of:
 3.12
 
 ## Build Commands
-- Start server: `cd backend && uv run -- fastapi dev main.py`
+- Start backend server: `cd backend && uv run -- fastapi dev main.py`
 - Install dependencies: `uv pip install .`
+- Start frontend server: `cd frontend && npm run dev`
 
 ## Database Commands
 - Create migration: `alembic revision --autogenerate -m "description"`

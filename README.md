@@ -23,6 +23,11 @@
 - React Router: navigation
 - Axios: API requests
 
+### Does this project use any AI Code Generation?
+Yes it does. I know that code generation is contentious for some, and potentially dangerous for a developer's learning, but I firmly believe that is not only the future of development, I also believe if it is used correctly can be an aide to learning new frameworks and reducing tedium. I use Github Copilot for some auto complete and for receiving advice on changes to make to the project. I attempt to back that up by reading documentation on specific frameworks and doing my own research on the internet as well. I am also experimenting with tools such as Claude Code, but I think agentic coding has some polishing before it is ready for more complex projects.
+
+Ultimately, I see LLM Code Generation as another tool under my belt to help me develop and learn the large breadth of concepts needed to be a good developer.
+
 ## Dev Installation
 
 ### Backend
