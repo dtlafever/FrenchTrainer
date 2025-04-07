@@ -77,20 +77,20 @@ const VerbCard: React.FC<VerbCardProps> = ({ verb, onNext }) => {
         </div>
       </div>
       
-      {/* Conjugation Toggle Button */}
-      <button 
-        onClick={toggleConjugations}
-        className="mt-4 bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600"
-      >
-        {showConjugations ? 'Hide Conjugations' : 'Show Conjugations'}
-      </button>
-      
       {/* Next Verb Button */}
       <button 
         onClick={onNext}
         className="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
       >
         Next Verb
+      </button>
+
+      {/* Conjugation Toggle Button */}
+      <button 
+        onClick={toggleConjugations}
+        className="mt-4 bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600"
+      >
+        {showConjugations ? 'Hide Conjugations' : 'Show Conjugations'}
       </button>
 
       {/* Conjugation Details */}

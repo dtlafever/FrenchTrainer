@@ -1,0 +1,48 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - db_data:/app/backend/instance
+    environment:
+      - DATABASE_URL=sqlite:///instance/db.sqlite3
+      - LLM_MODEL=deepseek-r1:8b
+      - SYSTEM_PROMPT_FILE=basic_prompt.txt
+    networks:
+      - french-trainer-network
+    depends_on:
+      - ollama
+    restart: always
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - french-trainer-network
+    restart: always
+
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - french-trainer-network
+    restart: always
+
+networks:
+  french-trainer-network:
+    driver: bridge
+
+volumes:
+  ollama_data:
+  db_data:

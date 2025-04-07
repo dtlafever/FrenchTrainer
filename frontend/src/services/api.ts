@@ -1,7 +1,15 @@
 import axios from 'axios';
+import { EdgeTTSClient, ProsodyOptions, OUTPUT_FORMAT } from 'edge-tts-client';
+import { Buffer } from 'buffer';
+
+// // TypeScript declaration for AudioContext
+// interface AudioContextWindow extends Window {
+//   AudioContext: typeof AudioContext;
+//   webkitAudioContext: typeof AudioContext;
+// }
 
 // Define the base API URL
-const API_URL = 'http://localhost:8000';
+const API_URL = import.meta.env.PROD ? '/api' : 'http://localhost:8000';
 
 // Create an axios instance
 const api = axios.create({
@@ -146,11 +154,74 @@ export const searchVerb = async (verb: string): Promise<FrenchVerb> => {
 
 export const playAudio = async (text: string, lang: string = 'fr-FR'): Promise<void> => {
   try {
-    await api.get('/api/speak', {
-      params: {
-        text,
-        lang,
-      },
+    // Choose voice based on language
+    let voice = 'fr-FR-VivienneMultilingualNeural'; // Default French voice
+    
+    if (lang === 'en-US') {
+      voice = 'en-US-SteffanNeural';
+    }
+    
+    const ttsClient = new EdgeTTSClient();
+
+    await ttsClient.setMetadata(voice, OUTPUT_FORMAT.AUDIO_24KHZ_48KBITRATE_MONO_MP3);
+
+    // Define SSML options
+    const options = new ProsodyOptions();
+    options.pitch = 'medium';
+    options.rate = 1.0;
+    options.volume = 90;
+
+    // Get the audio emitter
+    const emitter = ttsClient.toStream(text, options);
+    
+    // Initialize the audio context
+    // const windowWithAudioContext = window as unknown as AudioContextWindow;
+    // const audioContext = new (windowWithAudioContext.AudioContext || windowWithAudioContext.webkitAudioContext)();
+    
+    // Collect audio chunks
+    const chunks: Buffer[] = [];
+    
+    return new Promise((resolve, reject) => {
+      // Listen for data events
+      emitter.on('data', (data: Buffer) => {
+        chunks.push(data);
+      });
+      
+      // Handle errors
+      emitter.on('close', () => {
+        reject(new Error('Connection closed before audio was complete'));
+      });
+      
+      // Process and play audio when finished
+      emitter.on('end', async () => {
+        try {
+          // Concatenate all chunks
+          const totalLength = chunks.reduce((acc, chunk) => acc + chunk.length, 0);
+          const audioData = new Uint8Array(totalLength);
+          let offset = 0;
+          
+          for (const chunk of chunks) {
+            audioData.set(new Uint8Array(chunk), offset);
+            offset += chunk.length;
+          }
+          
+          // Create a temporary audio element for playback
+          const audioBlob = new Blob([audioData], { type: 'audio/mp3' });
+          const audioUrl = URL.createObjectURL(audioBlob);
+          const audio = new Audio(audioUrl);
+          
+          // Clean up when done
+          audio.onended = () => {
+            URL.revokeObjectURL(audioUrl);
+            resolve();
+          };
+          
+          // Start playback
+          audio.play();
+        } catch (err) {
+          reject(err);
+        }
+      });
     });
   } catch (error) {
     console.error('Error playing audio:', error);

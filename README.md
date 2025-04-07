@@ -28,16 +28,37 @@ Yes it does. I know that code generation is contentious for some, and potentiall
 
 Ultimately, I see LLM Code Generation as another tool under my belt to help me develop and learn the large breadth of concepts needed to be a good developer.
 
-## Dev Installation
+## Installation
 
-### Backend
+### Option 1: Docker Deployment (Recommended)
+
+1. Install [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/)
+
+2. Run the start script:
+```bash
+./start.sh
+```
+
+This will:
+- Start all services (frontend, backend, and Ollama)
+- Run database migrations
+- Pull the LLM model (deepseek-r1:8b)
+
+The application will be available at:
+- Frontend: [http://localhost](http://localhost)
+- Backend API: [http://localhost:8000](http://localhost:8000)
+- API Documentation: [http://localhost:8000/docs](http://localhost:8000/docs)
+
+### Option 2: Manual Development Setup
+
+#### Backend
 1. Open a terminal and run:
 `cd backend`
 `uv run -- fastapi dev main.py`
 
 This will install all the packages required and start up the fastapi server. You should be able to access the fastapi server at [http://127.0.0.1:8000](http://127.0.0.1:8000).
 
-### Frontend
+#### Frontend
 1. Open a new terminal window and run:
 ```bash
 cd frontend
