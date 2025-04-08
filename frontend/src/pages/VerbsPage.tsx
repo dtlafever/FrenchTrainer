@@ -45,26 +45,29 @@ const VerbsPage = () => {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6 text-center">French Verb Conjugations</h1>
       
-      <div className="grid md:grid-cols-2 gap-4 mb-6">
+      {/* Search bar for verbs */}
+      <div className="max-w-32 mx-auto mb-8 bg-blue-900 p-4 rounded-lg shadow-md flex justify-center">
+        {/* <h2 className="text-xl font-semibold mb-2 text-white">Search for a Verb</h2> */}
+        <VerbSearch onVerbFound={handleVerbFound} />
+      </div>
+      
+      <div className="grid md:grid-cols-1 gap-4 mb-6">
         <div>
           <h2 className="text-xl font-semibold mb-2">Add a New Verb</h2>
           <VerbForm onVerbCreated={handleVerbCreated} />
-        </div>
-        <div>
-          <h2 className="text-xl font-semibold mb-2">Search for a Verb</h2>
-          <VerbSearch onVerbFound={handleVerbFound} />
         </div>
       </div>
       
       <div className="mt-8">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-semibold">Verb Details</h2>
-          <button 
+          {/* TODO: I don't think this is needed since next verb button already does this */}
+          {/* <button 
             onClick={fetchRandomVerb}
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           >
             Load Random Verb
-          </button>
+          </button> */}
         </div>
         
         {loading ? (

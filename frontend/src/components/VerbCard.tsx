@@ -39,13 +39,36 @@ const VerbCard: React.FC<VerbCardProps> = ({ verb, onNext }) => {
 
   return (
     <div className="flex flex-col items-center">
-      {/* Display options */}
-      <div className="mb-6 flex justify-center gap-4">
+      {/* Display options with flag icons */}
+      <div className="mb-6 flex justify-center">
         <button 
           onClick={toggleLanguage}
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          className="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 flex items-center gap-2"
+          title={showEnglishFirst ? "Switch to French first" : "Switch to English first"}
         >
-          {showEnglishFirst ? 'Show French First' : 'Show English First'}
+          {showEnglishFirst ? (
+            <>
+              <svg className="w-6 h-4" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                {/* UK Flag */}
+                <rect width="512" height="512" fill="#012169"/>
+                <path d="M0 0 L512 512 M512 0 L0 512" stroke="#fff" strokeWidth="36"/>
+                <path d="M256 0 V512 M0 256 H512" stroke="#fff" strokeWidth="60"/>
+                <path d="M0 0 L512 512 M512 0 L0 512" stroke="#C8102E" strokeWidth="24"/>
+                <path d="M256 0 V512 M0 256 H512" stroke="#C8102E" strokeWidth="36"/>
+              </svg>
+              {/* <span>English First</span> */}
+            </>
+          ) : (
+            <>
+              <svg className="w-6 h-4" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                {/* French Flag */}
+                <rect width="170.667" height="512" fill="#002654"/>
+                <rect x="170.667" width="170.667" height="512" fill="#FFFFFF"/>
+                <rect x="341.333" width="170.667" height="512" fill="#CE1126"/>
+              </svg>
+              {/* <span>French First</span> */}
+            </>
+          )}
         </button>
       </div>
 
