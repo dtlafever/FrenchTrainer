@@ -52,7 +52,7 @@ def read_verbs(skip: int = 0, limit: int = 10, session: Session = Depends(get_se
 
 @router.get("/search", response_model=ShowFrenchVerb)
 def search_verbs(verb: str, session: Session = Depends(get_session)):
-    """Search for a verb by its infinitive form"""
+    """Search for a verb using any form"""
     verb = retrieve_verb_from_db_by_verb(verb, session)
 
     if verb is None:

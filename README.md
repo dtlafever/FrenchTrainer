@@ -57,7 +57,7 @@ The easiest way is to run the script `setup_local.sh`. Alternatively, you can ex
 1. Open a terminal and run:
 `cd backend`
 `mkdir instances`
-`uv run -- fastapi dev main.py`
+`uv run -- fastapi dev main.py --host 0.0.0.0 --port 8000`
 
 This will install all the packages required and start up the fastapi server. You should be able to access the fastapi server at [http://127.0.0.1:8000](http://127.0.0.1:8000).
 

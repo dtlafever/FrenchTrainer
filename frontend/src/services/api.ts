@@ -69,6 +69,79 @@ export interface FrenchVerb {
   imperatif_passe: ImperativeConjugation;
 }
 
+// Add the French Adjective interface
+export interface FrenchAdjective {
+  id: string;
+  masc_french_singular: string;
+  fem_french_singular: string;
+  masc_french_plural: string;
+  fem_french_plural: string;
+  english_text: string;
+}
+
+// ==============
+// Adjectives
+// ==============
+
+// Create new adjectives
+export const createAdjective = async (adjective: Omit<FrenchAdjective, 'id'>): Promise<FrenchAdjective> => {
+  try {    
+    const response = await api.post('/adjectives/', {
+      masc_french_singular: adjective.masc_french_singular,
+      fem_french_singular: adjective.fem_french_singular,
+      masc_french_plural: adjective.masc_french_plural,
+      fem_french_plural: adjective.fem_french_plural,
+      english_text: adjective.english_text
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error creating adjectives:', error);
+    throw error;
+  }
+};
+
+// Function to fetch adjectives
+export const fetchAdjectives = async (): Promise<FrenchAdjective[]> => {
+  try {
+    const response = await api.get(`/adjectives`, {
+      params: {
+        skip: 0, // Start from the beginning
+        limit: 1000, // Limit the number of adjectives fetched  
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error searching for adjectives:', error);
+    throw error;
+  }
+};
+
+// Fetch a random adjective
+export const getRandomAdjective = async (): Promise<FrenchAdjective> => {
+  try {
+    const response = await api.get('/adjectives/random');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching random adjectives:', error);
+    throw error;
+  }
+};
+
+// Function to search for adjectives
+export const searchAdjectives = async (adj: string): Promise<FrenchAdjective> => {
+  try {
+    const response = await api.get(`/adjectives/search`, {
+      params: {
+        adj: adj
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error searching for adjectives:', error);
+    throw error;
+  }
+}
+
 // ==========
 // FlashCards
 // ==========

@@ -21,6 +21,10 @@ const VerbSearch: React.FC<VerbSearchProps> = ({ onVerbFound }) => {
     
     setIsSearching(true);
     setError(null);
+
+    if (isSearching) {
+      console.log('Searching for Verb...');
+    }
     
     try {
       const verb = await searchVerb(searchTerm);
