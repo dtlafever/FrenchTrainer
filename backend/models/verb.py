@@ -236,7 +236,8 @@ class FrenchVerb(SQLModel, table=True):
     infinitif: str = Field(max_length=50)
     groupe: int = Field()  # TODO: only allow for values 1,2, or 3
     auxiliaire: str = Field(max_length=50)
-    created_on: datetime.datetime = Field(default=datetime.datetime.now())
+    # default_factory so it will be set to the current time when the object is created, not on module load
+    created_on: datetime.datetime = Field(default_factory=datetime.datetime.now)
 
     # =============
     # Temps Simples

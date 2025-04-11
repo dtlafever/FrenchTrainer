@@ -10,7 +10,8 @@ class Adjective(SQLModel, table=True):
     masc_french_plural: str = Field(default=None)
     fem_french_plural: str = Field(default=None)
     english_text: str = Field(default=None)
-    created_on: datetime.datetime = Field(default=datetime.datetime.now())
+    # default_factory so it will be set to the current time when the object is created, not on module load
+    created_on: datetime.datetime = Field(default_factory=datetime.datetime.now)
 
 class ShowAdjective(SQLModel):
     model_config = ConfigDict(from_attributes = True) #tells pydantic to convert even non dict obj to json
