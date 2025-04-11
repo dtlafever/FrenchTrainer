@@ -103,19 +103,21 @@ export const createAdjective = async (adjective: Omit<FrenchAdjective, 'id'>): P
 // Function to fetch adjectives
 export const fetchAdjectives = async (): Promise<FrenchAdjective[]> => {
   try {
-    const response = await fetch(`/adjectives`);
-    if (!response.ok) {
-      throw new Error('Failed to fetch adjectives');
-    }
-    return await response.json();
+    const response = await api.get(`/adjectives`, {
+      params: {
+        skip: 0, // Start from the beginning
+        limit: 1000, // Limit the number of adjectives fetched  
+      }
+    });
+    return response.data;
   } catch (error) {
-    console.error('Error fetching adjectives:', error);
-    return [];
+    console.error('Error searching for adjectives:', error);
+    throw error;
   }
 };
 
 // Fetch a random adjective
-export const getRandomAdjective = async (): Promise<Flashcard> => {
+export const getRandomAdjective = async (): Promise<FrenchAdjective> => {
   try {
     const response = await api.get('/adjectives/random');
     return response.data;
@@ -126,7 +128,7 @@ export const getRandomAdjective = async (): Promise<Flashcard> => {
 };
 
 // Function to search for adjectives
-export const searchAdjectives = async (adj: string): Promise<FrenchAdjective[]> => {
+export const searchAdjectives = async (adj: string): Promise<FrenchAdjective> => {
   try {
     const response = await api.get(`/adjectives/search`, {
       params: {
@@ -135,7 +137,7 @@ export const searchAdjectives = async (adj: string): Promise<FrenchAdjective[]> 
     });
     return response.data;
   } catch (error) {
-    console.error('Error searching for verb:', error);
+    console.error('Error searching for adjectives:', error);
     throw error;
   }
 }

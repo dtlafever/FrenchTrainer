@@ -13,9 +13,9 @@ router = APIRouter(
 )
 
 @router.post("/", response_model=ShowAdjective, status_code=status.HTTP_201_CREATED)
-def create_flashcard(flashcard: Adjective, session: Session = Depends(get_session)):
-    new_flashcard = create_adjective_in_db(flashcard, session)
-    return new_flashcard
+def create_adjective(adjective: Adjective, session: Session = Depends(get_session)):
+    new_adjective = create_adjective_in_db(adjective, session)
+    return new_adjective
 
 @router.get("/", response_model=list[ShowAdjective])
 def read_adjectives(skip: int = 0, limit: int = 10, session: Session = Depends(get_session)):
@@ -30,19 +30,20 @@ def read_random_adjective(session: Session = Depends(get_session)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No adjectives found")
     return adjective
 
-@router.get("/{adjective_id}", response_model=ShowAdjective)
-def read_adjective(adjective_id: int, session: Session = Depends(get_session)):
-    adjective = retrieve_adjective_from_db(adjective_id, session)
+# This function needs to be before the read_adjective function
+@router.get("/search", response_model=ShowAdjective)
+def search_adjective(adj: str, session: Session = Depends(get_session)):
+    """Search for an adjective using any form"""
+    adjective = retrieve_adjective_from_db_by_adjective(adj, session)
+
     if adjective is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Adjective not found")
     return adjective
 
-@router.get("/search", response_model=ShowAdjective)
-def search_verbs(adj: str, session: Session = Depends(get_session)):
-    """Search for a adj using any form"""
-    verb = retrieve_adjective_from_db_by_adjective(adj, session)
-
-    if verb is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Adj not found")
-
-    return verb
+@router.get("/{adjective_id}", response_model=ShowAdjective)
+def read_adjective(adjective_id: int, session: Session = Depends(get_session)):
+    adjective = retrieve_adjective_from_db(adjective_id, session)
+    # TODO: double check if this is the right way to handle this.
+    if adjective is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Adjective not found")
+    return adjective
