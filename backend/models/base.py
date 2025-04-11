@@ -1,6 +1,7 @@
 from sqlmodel import SQLModel
 from backend.models.flashcard import Flashcard
 from backend.models.verb import FrenchVerb
+from backend.models.adjective import Adjective
 
 # see documentation for why this is needed: https://alembic.sqlalchemy.org/en/latest/naming.html
 NAMING_CONVENTION = {

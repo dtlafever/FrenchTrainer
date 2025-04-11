@@ -33,6 +33,15 @@ const Navigation = () => {
             Verb Conjugations
           </Link>
           
+          <Link
+            to="/adjectives"
+            className={`px-3 py-2 rounded ${
+              isActive('/adjectives') ? 'bg-blue-800' : 'hover:bg-blue-700'
+            }`}
+          >
+            Adjectives
+          </Link>
+          
           <a
             href="http://localhost:8000/chat"
             target="_blank"

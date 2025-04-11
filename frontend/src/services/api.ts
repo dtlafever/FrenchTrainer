@@ -69,6 +69,44 @@ export interface FrenchVerb {
   imperatif_passe: ImperativeConjugation;
 }
 
+// Add the French Adjective interface
+export interface FrenchAdjective {
+  id: string;
+  french_masculine: string;
+  french_feminine: string;
+  french_masculine_plural: string;
+  french_feminine_plural: string;
+  english_text: string;
+}
+
+// Function to fetch adjectives
+export const fetchAdjectives = async (): Promise<FrenchAdjective[]> => {
+  try {
+    const response = await fetch(`/adjectives`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch adjectives');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching adjectives:', error);
+    return [];
+  }
+};
+
+// Function to search for adjectives
+export const searchAdjectives = async (query: string): Promise<FrenchAdjective[]> => {
+  try {
+    const response = await fetch(`/adjectives/search?q=${encodeURIComponent(query)}`);
+    if (!response.ok) {
+      throw new Error('Failed to search adjectives');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error searching adjectives:', error);
+    return [];
+  }
+}
+
 // ==========
 // FlashCards
 // ==========
