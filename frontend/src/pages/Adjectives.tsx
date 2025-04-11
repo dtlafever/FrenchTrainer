@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FrenchAdjective, fetchAdjectives, searchAdjectives } from '../services/api';
+import { FrenchAdjective, fetchAdjectives, searchAdjectives, getRandomAdjective } from '../services/api';
 import AdjectiveCard from '../components/AdjectiveCard';
 
 const Adjectives: React.FC = () => {
@@ -7,7 +7,17 @@ const Adjectives: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   
+  // const fetchRandomAdj = async () => {
+  //   setIsLoading(true);
+  //   setError(null);
+  //   try {
+  //     const data = await getRandomAdjective();
+  //     setAdjectives
+  //   }
+  // };
+
   useEffect(() => {
     const loadAdjectives = async () => {
       setIsLoading(true);

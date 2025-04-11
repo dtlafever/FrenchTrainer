@@ -3,7 +3,7 @@ from sqlmodel import Session
 
 from backend.models.adjective import Adjective, ShowAdjective
 from backend.db.session import get_session
-from backend.db.adjective import retrieve_adjective_from_db, retrieve_all_adjectives_from_db, create_adjective_in_db, retrieve_random_adjective_from_db
+from backend.db.adjective import retrieve_adjective_from_db, retrieve_all_adjectives_from_db, create_adjective_in_db, retrieve_random_adjective_from_db, retrieve_adjective_from_db_by_adjective
 
 router = APIRouter(
     prefix="/adjectives",
@@ -36,3 +36,13 @@ def read_adjective(adjective_id: int, session: Session = Depends(get_session)):
     if adjective is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Adjective not found")
     return adjective
+
+@router.get("/search", response_model=ShowAdjective)
+def search_verbs(adj: str, session: Session = Depends(get_session)):
+    """Search for a adj using any form"""
+    verb = retrieve_adjective_from_db_by_adjective(adj, session)
+
+    if verb is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Adj not found")
+
+    return verb

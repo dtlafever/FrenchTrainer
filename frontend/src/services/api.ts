@@ -72,12 +72,33 @@ export interface FrenchVerb {
 // Add the French Adjective interface
 export interface FrenchAdjective {
   id: string;
-  french_masculine: string;
-  french_feminine: string;
-  french_masculine_plural: string;
-  french_feminine_plural: string;
+  masc_french_singular: string;
+  fem_french_singular: string;
+  masc_french_plural: string;
+  fem_french_plural: string;
   english_text: string;
 }
+
+// ==============
+// Adjectives
+// ==============
+
+// Create new adjectives
+export const createAdjective = async (adjective: Omit<FrenchAdjective, 'id'>): Promise<FrenchAdjective> => {
+  try {    
+    const response = await api.post('/adjectives/', {
+      masc_french_singular: adjective.masc_french_singular,
+      fem_french_singular: adjective.fem_french_singular,
+      masc_french_plural: adjective.masc_french_plural,
+      fem_french_plural: adjective.fem_french_plural,
+      english_text: adjective.english_text
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error creating adjectives:', error);
+    throw error;
+  }
+};
 
 // Function to fetch adjectives
 export const fetchAdjectives = async (): Promise<FrenchAdjective[]> => {
@@ -93,17 +114,29 @@ export const fetchAdjectives = async (): Promise<FrenchAdjective[]> => {
   }
 };
 
-// Function to search for adjectives
-export const searchAdjectives = async (query: string): Promise<FrenchAdjective[]> => {
+// Fetch a random adjective
+export const getRandomAdjective = async (): Promise<Flashcard> => {
   try {
-    const response = await fetch(`/adjectives/search?q=${encodeURIComponent(query)}`);
-    if (!response.ok) {
-      throw new Error('Failed to search adjectives');
-    }
-    return await response.json();
+    const response = await api.get('/adjectives/random');
+    return response.data;
   } catch (error) {
-    console.error('Error searching adjectives:', error);
-    return [];
+    console.error('Error fetching random adjectives:', error);
+    throw error;
+  }
+};
+
+// Function to search for adjectives
+export const searchAdjectives = async (adj: string): Promise<FrenchAdjective[]> => {
+  try {
+    const response = await api.get(`/adjectives/search`, {
+      params: {
+        adj: adj
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error searching for verb:', error);
+    throw error;
   }
 }
 

@@ -1,6 +1,6 @@
 from fastapi import Depends
 from sqlmodel import Session
-from sqlalchemy import select, text
+from sqlalchemy import select, text, or_
 
 from backend.models.adjective import Adjective
 from backend.db.session import get_session
@@ -32,3 +32,19 @@ def retrieve_all_adjectives_from_db(skip: int = 0, limit: int = 10, session: Ses
     # TODO: figure out how to use session.exec properly. Currently it is returning a tuple
     adjectives = [adjective[0] for adjective in adjectives]
     return adjectives
+
+def retrieve_adjective_from_db_by_adjective(adj: str, session: Session = Depends(get_session)) -> Adjective | None:
+    statement = select(Adjective).where(
+        or_(
+            Adjective.masc_french_singular == adj,
+            Adjective.masc_french_plural == adj,
+            Adjective.fem_french_singular == adj,
+            Adjective.fem_french_plural == adj,
+            Adjective.english_text == adj
+        )
+    )
+
+    result_adj = session.exec(statement).first()
+    if result_adj is not None:
+        result_adj = result_adj[0]
+    return result_adj
