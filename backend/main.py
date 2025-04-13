@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi_mcp import FastApiMCP
 
 from contextlib import asynccontextmanager
 
@@ -13,6 +14,22 @@ async def lifespan(app: FastAPI):
     # Startup functions
     create_db_and_tables()
     app.include_router(api_router)
+    # init MCP server
+    mcp = FastApiMCP(
+        app,
+        # Optional parameters
+        name="frenchtrainer_MCP",
+        description="French Trainer MCP",
+        base_url="http://localhost:8000",
+        exclude_operations=[
+            "create_adjective",
+            "create_verb",
+            "create_flashcard"
+        ]
+    )
+
+    # mount the MCP server to http://server_url/mcp
+    mcp.mount(api_router)
     yield
     # Shutdown functions go here
 

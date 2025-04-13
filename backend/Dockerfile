@@ -11,6 +11,9 @@ COPY pyproject.toml uv.lock ./
 # Install dependencies
 RUN uv sync
 
+# install mcp-proxy for MCP clients that dont support SSE URL
+RUN uv tool install mcp-proxy
+
 # Ensure alembic is available in PATH
 RUN ln -s /app/.venv/bin/alembic /usr/local/bin/alembic
 

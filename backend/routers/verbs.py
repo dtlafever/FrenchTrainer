@@ -17,7 +17,7 @@ router = APIRouter(
 # API Routes (returning JSON)
 # =============================
 
-@router.post("/", response_model=ShowFrenchVerb, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=ShowFrenchVerb, status_code=status.HTTP_201_CREATED, operation_id="create_verb")
 def create_verb(verb: str, session: Session = Depends(get_session)):
     # First check if verb exists in database
     existing_verb = retrieve_verb_from_db_by_verb(verb, session)
@@ -45,12 +45,12 @@ def create_verb(verb: str, session: Session = Depends(get_session)):
     
     return new_verb
 
-@router.get("/", response_model=list[ShowFrenchVerb])
+@router.get("/", response_model=list[ShowFrenchVerb], operation_id="read_verbs")
 def read_verbs(skip: int = 0, limit: int = 10, session: Session = Depends(get_session)):
     verbs = retrieve_all_verbs_from_db(skip, limit, session)
     return verbs
 
-@router.get("/search", response_model=ShowFrenchVerb)
+@router.get("/search", response_model=ShowFrenchVerb, operation_id="search_verbs")
 def search_verbs(verb: str, session: Session = Depends(get_session)):
     """Search for a verb using any form"""
     verb = retrieve_verb_from_db_by_verb(verb, session)
@@ -64,15 +64,15 @@ def search_verbs(verb: str, session: Session = Depends(get_session)):
 # Web Routes (returning HTML)
 # =============================
 
-@router.get("/random", response_model=ShowFrenchVerb)
-def read_random_flashcard(session: Session = Depends(get_session)):
+@router.get("/random", response_model=ShowFrenchVerb, operation_id="read_random_verb")
+def read_random_verb(session: Session = Depends(get_session)):
     flashcard = retrieve_random_verb_flashcard_from_db(session)
     # TODO: double check if this is the right way to handle this. Maybe it should always return a flashcard?
     if flashcard is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No flashcards found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No Verbs found")
     return flashcard
 
-@router.get("/{verb_id}", response_model=ShowFrenchVerb)
+@router.get("/{verb_id}", response_model=ShowFrenchVerb, operation_id="read_verb")
 def read_verb(verb_id: int, session: Session = Depends(get_session)):
     verb = retrieve_verb_from_db(verb_id, session)
     if verb is None:

@@ -9,8 +9,9 @@ services:
       - db_data:/app/backend/instance
     environment:
       - DATABASE_URL=sqlite:///instance/db.sqlite3
-      - LLM_MODEL=deepseek-r1:8b
+      - LLM_MODEL=phi4-mini
       - SYSTEM_PROMPT_FILE=basic_prompt.txt
+      - OLLAMA_HOST=http://ollama:11434
     networks:
       - french-trainer-network
     depends_on:

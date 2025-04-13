@@ -12,17 +12,17 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-@router.post("/", response_model=ShowAdjective, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=ShowAdjective, status_code=status.HTTP_201_CREATED, operation_id="create_adjective")
 def create_adjective(adjective: Adjective, session: Session = Depends(get_session)):
     new_adjective = create_adjective_in_db(adjective, session)
     return new_adjective
 
-@router.get("/", response_model=list[ShowAdjective])
-def read_adjectives(skip: int = 0, limit: int = 10, session: Session = Depends(get_session)):
+@router.get("/", response_model=list[ShowAdjective], operation_id="read_adjectives")
+def read_adjectives(skip: int = 0, limit: int = 10, session: Session = Depends(get_session),):
     adjectives = retrieve_all_adjectives_from_db(skip, limit, session)
     return adjectives
 
-@router.get("/random", response_model=ShowAdjective)
+@router.get("/random", response_model=ShowAdjective, operation_id="read_random_adjective")
 def read_random_adjective(session: Session = Depends(get_session)):
     adjective = retrieve_random_adjective_from_db(session)
     # TODO: double check if this is the right way to handle this. Maybe it should always return an adjective?
@@ -31,7 +31,7 @@ def read_random_adjective(session: Session = Depends(get_session)):
     return adjective
 
 # This function needs to be before the read_adjective function
-@router.get("/search", response_model=ShowAdjective)
+@router.get("/search", response_model=ShowAdjective, operation_id="search_adjective")
 def search_adjective(adj: str, session: Session = Depends(get_session)):
     """Search for an adjective using any form"""
     adjective = retrieve_adjective_from_db_by_adjective(adj, session)
@@ -40,7 +40,7 @@ def search_adjective(adj: str, session: Session = Depends(get_session)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Adjective not found")
     return adjective
 
-@router.get("/{adjective_id}", response_model=ShowAdjective)
+@router.get("/{adjective_id}", response_model=ShowAdjective, operation_id="read_adjective")
 def read_adjective(adjective_id: int, session: Session = Depends(get_session)):
     adjective = retrieve_adjective_from_db(adjective_id, session)
     # TODO: double check if this is the right way to handle this.

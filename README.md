@@ -14,7 +14,7 @@
 - SQLModel: how we define our Database Models
 - Alembic: handles Database migrations
 - Beautiful Soup: web scrapping for looking up verb tenses
-- Ollama and Chainlit: LLM library and LLM UI
+- Ollama and Chainlit: LLM library and LLM UI, as well as Model Context Protocol (MCP) for read only access to our database using and LLM.
 
 ### Frontend
 - React: UI library
@@ -74,15 +74,39 @@ npm run dev
 This will start the React development server. You can access the frontend at [http://localhost:5173](http://localhost:5173).
 
 2. Install Ollama (if you want LLMs)
-- [Ollama](https://ollama.com/download) should be installed and running
+- [Ollama](https://ollama.com/download) should be installed. If you run ollama using Docker, it should be started and running on port `11434`.
 
 3. Create a `.env` file in the `backend` folder and fill out the following fields:
 ```
-LLM_MODEL="deepseek-r1:8b"
+LLM_MODEL="phi4-mini"
 SYSTEM_PROMPT_FILE="basic_prompt.txt"
 DATABASE_URL="sqlite:///flashcards.db"
 ```
 Feel free to change to whatever llm model you want from [ollama](https://ollama.com/search). For system prompt, this is the prompt you will use to define how you want your chatbot to behave. for now we just have a placeholder one. Finally, the database_url is can be left alone for the moment since the only database we are using is a sqlite database with basic flashcards.
+
+## Model Context Protocol
+### Clients
+- Option 1: [Claude Desktop](https://claude.ai/download)
+  - Go to Settings->Developer->Edit Config:
+```json
+{
+    "mcpServers": {
+        "frenchtrainer-mcp-proxy": {
+            "command": "uv",
+            "args": [
+            "tool",
+            "run",
+            "mcp-proxy",
+            "http://127.0.0.1:8000/mcp"
+            ]
+        }
+    }
+}
+  - restart the client and you should see a little hammer icon and a number.
+```
+- Option 2: Use the built in Chainlit client built into the app. Go to http://127.0.0.1:8000/chat
+  - Click on the adaptor icon and Fill in the name field with `frenchtrainer_mcp`, type with `SSE`, and Server URL with `http://localhost:8000/mcp`.
+  - NOTE: the first time you run this LLM, it might take a few minutes to be ready as it is downloading the LLM from Ollama Servers.
 
 ## Migrations
 ### Just Starting
@@ -131,7 +155,8 @@ We now have successfully completed our first migration!
  a. Update Verb Models to support passive voice instead of only active.
 2. ~~Add migrations to our app to ensure smooth updates to our database.~~
 3. Show various forms of a given word in the flash cards (i.e. third person singular verbs, the feminine version of a noun, etc).
-4. Implement a RAG to use with our french database to practice using the words in sentences with our LLM.
+4. ~Implement a RAG to use with our french database to practice using the words in sentences with our LLM.~
+ a. fix MCP connection to local LLM chainlit server. It currently only works for external servers like Claude Desktop.
 5. add autocomplete/fill for french words you are adding to your flashcards from some external database or api. This will require using something like a Trie data structure.
 6. ~~Be able to add or search a verb using  tense. That way I dont need to know the infinitive.~~
 7. Implement proper security
@@ -143,9 +168,12 @@ We now have successfully completed our first migration!
   a. ~~Test Utils~~
   b. ~~Test Flashcards~~
   c. Test Verbs
+  d. Test Adjs
 9. Linting
 10. ~~Proper Frontend (React with Vite)~~
 11. React Testing
+12. Combine all types of words into a singular Flashcard Stack instead of seperate stacks.
+13. Be able to search all words at the same time instead of just one type at a time (i.e. only verbs, or only adjs, etc)
 
  ## Flashcards to be added
  - Days of the week
