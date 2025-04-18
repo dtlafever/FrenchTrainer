@@ -3,6 +3,20 @@ import { getRandomVerb, FrenchVerb } from '../services/api';
 import VerbCard from '../components/VerbCard';
 import VerbForm from '../components/VerbForm';
 import VerbSearch from '../components/VerbSearch';
+import { 
+  Container, 
+  Title, 
+  Box, 
+  Paper, 
+  Grid, 
+  Flex, 
+  Text, 
+  Button, 
+  Center, 
+  Stack, 
+  Loader, 
+  Alert 
+} from '@mantine/core';
 
 const VerbsPage = () => {
   const [verb, setVerb] = useState<FrenchVerb | null>(null);
@@ -42,58 +56,62 @@ const VerbsPage = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6 text-center">French Verb Conjugations</h1>
-      
+    <Container size="md" py="xl">
+      <Title order={1} ta="center" mb="lg">French Verb Conjugations</Title>
+
       {/* Search bar for verbs */}
-      <div className="max-w-32 mx-auto mb-8 bg-blue-900 p-4 rounded-lg shadow-md flex justify-center">
-        {/* <h2 className="text-xl font-semibold mb-2 text-white">Search for a Verb</h2> */}
-        <VerbSearch onVerbFound={handleVerbFound} />
-      </div>
-      
-      <div className="grid md:grid-cols-1 gap-4 mb-6">
-        <div>
-          <h2 className="text-xl font-semibold mb-2">Add a New Verb</h2>
+      <Paper bg="blue.9" p="md" mb="lg" shadow="md" radius="md">
+        <Center>
+          <VerbSearch onVerbFound={handleVerbFound} />
+        </Center>
+      </Paper>
+
+      <Grid mb="lg">
+        <Grid.Col>
+          <Title order={3} mb="xs">Add a New Verb</Title>
           <VerbForm onVerbCreated={handleVerbCreated} />
-        </div>
-      </div>
-      
-      <div className="mt-8">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-semibold">Verb Details</h2>
+        </Grid.Col>
+      </Grid>
+
+      <Box mt="xl">
+        <Flex justify="space-between" align="center" mb="md">
+          <Title order={2}>Verb Details</Title>
           {/* TODO: I don't think this is needed since next verb button already does this */}
-          {/* <button 
-            onClick={fetchRandomVerb}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          >
+          {/* <Button onClick={fetchRandomVerb}>
             Load Random Verb
-          </button> */}
-        </div>
-        
+          </Button> */}
+        </Flex>
+
         {loading ? (
-          <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
-            <p className="mt-4">Loading verb...</p>
-          </div>
+          <Center py="xl">
+            <Stack align="center">
+              <Loader size="lg" />
+              <Text mt="md">Loading verb...</Text>
+            </Stack>
+          </Center>
         ) : error ? (
-          <div className="text-center py-8 text-red-600">
-            <p>{error}</p>
-            <button 
-              onClick={fetchRandomVerb}
-              className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-            >
-              Try Again
-            </button>
-          </div>
+          <Center py="xl">
+            <Stack align="center">
+              <Alert color="red" title="Error" variant="filled">
+                {error}
+              </Alert>
+              <Button 
+                onClick={fetchRandomVerb}
+                mt="md"
+              >
+                Try Again
+              </Button>
+            </Stack>
+          </Center>
         ) : verb ? (
           <VerbCard verb={verb} onNext={handleNext} />
         ) : (
-          <div className="text-center py-8">
-            <p>No verbs available. Please add some verbs using the form above.</p>
-          </div>
+          <Center py="xl">
+            <Text>No verbs available. Please add some verbs using the form above.</Text>
+          </Center>
         )}
-      </div>
-    </div>
+      </Box>
+    </Container>
   );
 };
 

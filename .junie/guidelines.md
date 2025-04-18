@@ -1,34 +1,17 @@
-# FrenchTrainer Development Guide
+# Project Guidelines
 
 ## Project Outline
 A fullstack python and Typescript project consisting of:
-- FastAPI backend
+- FastAPI backend (in ./backend/)
 - SQLite database (SQLAlchemy 2.0 or greater)
 - Alembic for database migrations
-- React frontend using Vite and TailwindCSS
-
-## Python version
-3.12
-
-## Build Commands
-- Start backend server: `cd backend && uv run -- fastapi dev main.py`
-- Install dependencies: `uv pip install .`
-- Start frontend server: `cd frontend && npm run dev`
-
-## Database Commands
-- Create migration: `alembic revision --autogenerate -m "description"`
-- Apply migrations: `alembic upgrade head`
-- Check current version: `alembic current`
+- React frontend using Vite and TailwindCSS (in ./frontend/)
 
 ## Test Commands For the Backend
 - Run all tests: `pytest backend/tests`
 - Run specific test: `pytest backend/tests/test_routes/test_flashcards.py::test_create_flashcard`
 - Run with coverage: `pytest --cov=backend`
-
-## Lint Commands
-- Check code: `uv run ruff check`
-- Auto-fix issues: `uv run ruff check --fix`
-- Format code: `uv run ruff format`
+* Whether Junie should build the project before submitting the result
 
 ## Code Style Guidelines
 - Line length: 120 characters max
@@ -38,3 +21,7 @@ A fullstack python and Typescript project consisting of:
 - Organization: Keep routers, models, and database code separate
 - Testing: Write unit tests for all new functionality
 - Import order: stdlib → third-party → local modules
+
+## General Instructions
+- check the correctness of the proposed solution when possible
+

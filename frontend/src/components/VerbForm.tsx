@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { createVerb } from '../services/api';
+import { TextInput, Paper, Button, Alert, Text, Stack, Group } from '@mantine/core';
 
 interface VerbFormProps {
   onVerbCreated: () => void;
@@ -12,15 +13,15 @@ const VerbForm: React.FC<VerbFormProps> = ({ onVerbCreated }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!verb.trim()) {
       setError('Verb is required');
       return;
     }
-    
+
     setIsSubmitting(true);
     setError(null);
-    
+
     try {
       await createVerb(verb);
       setVerb('');
@@ -38,42 +39,36 @@ const VerbForm: React.FC<VerbFormProps> = ({ onVerbCreated }) => {
   };
 
   return (
-    <form 
-      onSubmit={handleSubmit} 
-      className="mb-6 bg-white p-4 rounded shadow"
-    >
-      <div className="mb-4">
-        <label htmlFor="verb" className="block text-gray-700">French Verb (infinitive form)</label>
-        <input
-          id="verb"
-          type="text"
-          value={verb}
-          onChange={(e) => setVerb(e.target.value)}
-          className="w-full p-2 border rounded focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-          placeholder="e.g. parler"
-          required
-        />
-        <p className="mt-1 text-sm text-gray-500">
-          Enter the infinitive form of a French verb (e.g. parler, manger, finir)
-        </p>
-      </div>
-      
-      {error && (
-        <div className="mb-4 p-2 bg-red-100 text-red-700 rounded">
-          {error}
-        </div>
-      )}
-      
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className={`bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 ${
-          isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
-        }`}
-      >
-        {isSubmitting ? 'Looking up verb...' : 'Add Verb'}
-      </button>
-    </form>
+    <Paper shadow="xs" p="md" mb="md" radius="md" withBorder>
+      <form onSubmit={handleSubmit}>
+        <Stack spacing="md">
+          <TextInput
+            label="French Verb (infinitive form)"
+            value={verb}
+            onChange={(e) => setVerb(e.target.value)}
+            placeholder="e.g. parler"
+            required
+            description="Enter the infinitive form of a French verb (e.g. parler, manger, finir)"
+          />
+
+          {error && (
+            <Alert color="red" title="Error" variant="filled">
+              {error}
+            </Alert>
+          )}
+
+          <Group justify="flex-end">
+            <Button
+              type="submit"
+              loading={isSubmitting}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Looking up verb...' : 'Add Verb'}
+            </Button>
+          </Group>
+        </Stack>
+      </form>
+    </Paper>
   );
 };
 
