@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Flashcard } from '../services/api';
 import { playAudio } from '../services/api';
+import { Card, Text, Button, Flex, ActionIcon, Box, Stack } from '@mantine/core';
+// import { useDisclosure } from '@mantine/hooks';
 
 interface FlashCardProps {
   flashcard: Flashcard;
@@ -20,41 +22,47 @@ const FlashCard: React.FC<FlashCardProps> = ({ flashcard, onNext }) => {
   };
 
   return (
-    <div className="flex flex-col items-center">
-      <div 
-        className={`flip-card bg-white rounded shadow ${isFlipped ? 'flipped' : ''}`}
+    <Flex direction="column" align="center">
+      <Box
+        className={`flip-card ${isFlipped ? 'flipped' : ''}`}
         onClick={handleFlip}
+        style={{ position: 'relative' }}
       >
         {/* Audio Button */}
-        <div className="absolute top-2 right-2 z-10">
-          <button 
-            onClick={handlePlayAudio}
-            className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded"
-          >
-            🔊
-          </button>
-        </div>
-        
+        <ActionIcon 
+          variant="filled" 
+          color="blue" 
+          radius="md"
+          onClick={handlePlayAudio}
+          style={{ position: 'absolute', top: '8px', right: '8px', zIndex: 10 }}
+        >
+          🔊
+        </ActionIcon>
+
         <div className="flip-card-inner">
-          <div className="flip-card-front bg-white">
-            <p className="text-xl">{flashcard.question}</p>
-          </div>
-          <div className="flip-card-back bg-white">
-            <div className="text-center">
-              <p className="text-xl mb-1">{flashcard.question}</p>
-              <p className="text-xl font-semibold">{flashcard.answer}</p>
-            </div>
-          </div>
+          <Card className="flip-card-front" shadow="sm" padding="lg" radius="md" withBorder>
+            <Text size="xl" ta="center">{flashcard.question}</Text>
+          </Card>
+
+          <Card className="flip-card-back" shadow="sm" padding="lg" radius="md" withBorder>
+            <Stack align="center" gap="xs">
+              <Text size="xl">{flashcard.question}</Text>
+              <Text size="xl" fw={600}>{flashcard.answer}</Text>
+            </Stack>
+          </Card>
         </div>
-      </div>
-      
-      <button 
+      </Box>
+
+      <Button 
         onClick={onNext}
-        className="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+        color="green"
+        size="md"
+        radius="md"
+        mt="md"
       >
         Next Flashcard
-      </button>
-    </div>
+      </Button>
+    </Flex>
   );
 };
 

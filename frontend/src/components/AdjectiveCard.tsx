@@ -1,4 +1,5 @@
 import { FrenchAdjective, playAudio } from '../services/api';
+import { Card, Title, Text, Button, Grid, Group, Box, ActionIcon, Flex, Paper } from '@mantine/core';
 
 interface AdjectiveCardProps {
   adjective: FrenchAdjective;
@@ -14,105 +15,118 @@ const AdjectiveCard: React.FC<AdjectiveCardProps> = ({ adjective, onNext }) => {
     }
   };
 
+  // Audio icon component for reuse
+  const AudioIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+    </svg>
+  );
+
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden">
-      <div className="p-6">
-        <div className="mb-4">
-          <h3 className="text-2xl font-bold text-gray-800 mb-2">
-            {adjective.masc_french_singular}
-            <button
-              onClick={() => handlePlayAudio(adjective.masc_french_singular)}
-              className="ml-2 text-blue-500 hover:text-blue-700"
-              aria-label="Play pronunciation"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
-              </svg>
-            </button>
-          </h3>
-          <p className="text-gray-600 italic">{adjective.english_text}</p>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4 mb-6">
-          <div className="bg-blue-50 p-4 rounded">
-            <h4 className="font-semibold text-blue-800 mb-2">Masculine</h4>
-            <div className="mb-2">
-              <span className="block text-sm text-gray-500">Singular:</span>
-              <div className="flex items-center">
-                <span className="font-medium">{adjective.masc_french_singular}</span>
-                <button
-                  onClick={() => handlePlayAudio(adjective.masc_french_singular)}
-                  className="ml-2 text-blue-500 hover:text-blue-700"
-                  aria-label="Play pronunciation"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-            <div>
-              <span className="block text-sm text-gray-500">Plural:</span>
-              <div className="flex items-center">
-                <span className="font-medium">{adjective.masc_french_plural}</span>
-                <button
-                  onClick={() => handlePlayAudio(adjective.masc_french_plural)}
-                  className="ml-2 text-blue-500 hover:text-blue-700"
-                  aria-label="Play pronunciation"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-pink-50 p-4 rounded">
-            <h4 className="font-semibold text-pink-800 mb-2">Feminine</h4>
-            <div className="mb-2">
-              <span className="block text-sm text-gray-500">Singular:</span>
-              <div className="flex items-center">
-                <span className="font-medium">{adjective.fem_french_singular}</span>
-                <button
-                  onClick={() => handlePlayAudio(adjective.fem_french_singular)}
-                  className="ml-2 text-blue-500 hover:text-blue-700"
-                  aria-label="Play pronunciation"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-            <div>
-              <span className="block text-sm text-gray-500">Plural:</span>
-              <div className="flex items-center">
-                <span className="font-medium">{adjective.fem_french_plural}</span>
-                <button
-                  onClick={() => handlePlayAudio(adjective.fem_french_plural)}
-                  className="ml-2 text-blue-500 hover:text-blue-700"
-                  aria-label="Play pronunciation"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex justify-end">
-          <button
-            onClick={onNext}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+    <Card shadow="md" radius="md" withBorder p="lg">
+      <Card.Section p="md">
+        <Group mb="md">
+          <Title order={3}>{adjective.masc_french_singular}</Title>
+          <ActionIcon 
+            variant="subtle" 
+            color="blue" 
+            onClick={() => handlePlayAudio(adjective.masc_french_singular)}
+            aria-label="Play pronunciation"
           >
-            Next Adjective
-          </button>
-        </div>
-      </div>
-    </div>
+            <AudioIcon />
+          </ActionIcon>
+        </Group>
+        <Text c="dimmed" fs="italic" mb="lg">{adjective.english_text}</Text>
+      </Card.Section>
+
+      <Grid mb="md">
+        <Grid.Col span={6}>
+          <Paper p="md" radius="md" bg="blue.0">
+            <Text fw={600} c="blue.8" mb="sm">Masculine</Text>
+
+            <Box mb="sm">
+              <Text size="sm" c="dimmed">Singular:</Text>
+              <Flex align="center" gap="xs">
+                <Text fw={500}>{adjective.masc_french_singular}</Text>
+                <ActionIcon 
+                  size="sm" 
+                  variant="subtle" 
+                  color="blue" 
+                  onClick={() => handlePlayAudio(adjective.masc_french_singular)}
+                  aria-label="Play pronunciation"
+                >
+                  <AudioIcon />
+                </ActionIcon>
+              </Flex>
+            </Box>
+
+            <Box>
+              <Text size="sm" c="dimmed">Plural:</Text>
+              <Flex align="center" gap="xs">
+                <Text fw={500}>{adjective.masc_french_plural}</Text>
+                <ActionIcon 
+                  size="sm" 
+                  variant="subtle" 
+                  color="blue" 
+                  onClick={() => handlePlayAudio(adjective.masc_french_plural)}
+                  aria-label="Play pronunciation"
+                >
+                  <AudioIcon />
+                </ActionIcon>
+              </Flex>
+            </Box>
+          </Paper>
+        </Grid.Col>
+
+        <Grid.Col span={6}>
+          <Paper p="md" radius="md" bg="pink.0">
+            <Text fw={600} c="pink.8" mb="sm">Feminine</Text>
+
+            <Box mb="sm">
+              <Text size="sm" c="dimmed">Singular:</Text>
+              <Flex align="center" gap="xs">
+                <Text fw={500}>{adjective.fem_french_singular}</Text>
+                <ActionIcon 
+                  size="sm" 
+                  variant="subtle" 
+                  color="blue" 
+                  onClick={() => handlePlayAudio(adjective.fem_french_singular)}
+                  aria-label="Play pronunciation"
+                >
+                  <AudioIcon />
+                </ActionIcon>
+              </Flex>
+            </Box>
+
+            <Box>
+              <Text size="sm" c="dimmed">Plural:</Text>
+              <Flex align="center" gap="xs">
+                <Text fw={500}>{adjective.fem_french_plural}</Text>
+                <ActionIcon 
+                  size="sm" 
+                  variant="subtle" 
+                  color="blue" 
+                  onClick={() => handlePlayAudio(adjective.fem_french_plural)}
+                  aria-label="Play pronunciation"
+                >
+                  <AudioIcon />
+                </ActionIcon>
+              </Flex>
+            </Box>
+          </Paper>
+        </Grid.Col>
+      </Grid>
+
+      <Group justify="flex-end">
+        <Button
+          onClick={onNext}
+          color="blue"
+          radius="md"
+        >
+          Next Adjective
+        </Button>
+      </Group>
+    </Card>
   );
 };
 

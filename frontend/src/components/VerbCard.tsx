@@ -1,5 +1,18 @@
 import { useState } from 'react';
 import { FrenchVerb, playAudio } from '../services/api';
+import {
+  Button, 
+  Card, 
+  Text, 
+  Box, 
+  Stack, 
+  Title, 
+  Group, 
+  ActionIcon, 
+  Table, 
+  Paper,
+  Grid
+} from '@mantine/core';
 
 interface VerbCardProps {
   verb: FrenchVerb;
@@ -38,182 +51,200 @@ const VerbCard: React.FC<VerbCardProps> = ({ verb, onNext }) => {
   const backTranslation = showEnglishFirst ? verb.infinitif : verb.english_text;
 
   return (
-    <div className="flex flex-col items-center">
+    <Stack align="center" gap="md">
       {/* Display options with flag icons */}
-      <div className="mb-6 flex justify-center">
-        <button 
+      <Group mb="md" justify="center">
+        <Button 
           onClick={toggleLanguage}
-          className="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 flex items-center gap-2"
-          title={showEnglishFirst ? "Switch to French first" : "Switch to English first"}
-        >
-          {showEnglishFirst ? (
-            <>
-              <svg className="w-6 h-4" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-                {/* UK Flag */}
-                <rect width="512" height="512" fill="#012169"/>
-                <path d="M0 0 L512 512 M512 0 L0 512" stroke="#fff" strokeWidth="36"/>
-                <path d="M256 0 V512 M0 256 H512" stroke="#fff" strokeWidth="60"/>
-                <path d="M0 0 L512 512 M512 0 L0 512" stroke="#C8102E" strokeWidth="24"/>
-                <path d="M256 0 V512 M0 256 H512" stroke="#C8102E" strokeWidth="36"/>
-              </svg>
-              {/* <span>English First</span> */}
-            </>
+          leftSection={showEnglishFirst ? (
+            <svg width="24" height="16" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+              {/* UK Flag */}
+              <rect width="512" height="512" fill="#012169"/>
+              <path d="M0 0 L512 512 M512 0 L0 512" stroke="#fff" strokeWidth="36"/>
+              <path d="M256 0 V512 M0 256 H512" stroke="#fff" strokeWidth="60"/>
+              <path d="M0 0 L512 512 M512 0 L0 512" stroke="#C8102E" strokeWidth="24"/>
+              <path d="M256 0 V512 M0 256 H512" stroke="#C8102E" strokeWidth="36"/>
+            </svg>
           ) : (
-            <>
-              <svg className="w-6 h-4" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-                {/* French Flag */}
-                <rect width="170.667" height="512" fill="#002654"/>
-                <rect x="170.667" width="170.667" height="512" fill="#FFFFFF"/>
-                <rect x="341.333" width="170.667" height="512" fill="#CE1126"/>
-              </svg>
-              {/* <span>French First</span> */}
-            </>
+            <svg width="24" height="16" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+              {/* French Flag */}
+              <rect width="170.667" height="512" fill="#002654"/>
+              <rect x="170.667" width="170.667" height="512" fill="#FFFFFF"/>
+              <rect x="341.333" width="170.667" height="512" fill="#CE1126"/>
+            </svg>
           )}
-        </button>
-      </div>
+          title={showEnglishFirst ? "Switch to French first" : "Switch to English first"}
+          radius="md"
+        >
+          {showEnglishFirst ? "English First" : "French First"}
+        </Button>
+      </Group>
 
       {/* Verb Flashcard */}
-      <div 
-        className={`flip-card bg-white rounded shadow ${isFlipped ? 'flipped' : ''}`} 
+      <Box 
+        className={`flip-card ${isFlipped ? 'flipped' : ''}`} 
         onClick={handleFlip}
+        style={{ position: 'relative', cursor: 'pointer' }}
       >
         {/* Audio Button */}
-        <div className="absolute top-2 right-2 z-10">
-          <button 
-            onClick={handlePlayAudio}
-            className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded"
-          >
-            🔊
-          </button>
-        </div>
-        
-        <div className="flip-card-inner">
-          <div className="flip-card-front bg-white">
-            <p className="text-xl">{frontText}</p>
-          </div>
-          <div className="flip-card-back bg-white">
-            <div className="text-center">
-              <p className="text-xl mb-1">{backTitle}</p>
-              <p className="text-xl font-semibold">{backTranslation}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      {/* Next Verb Button */}
-      <button 
-        onClick={onNext}
-        className="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-      >
-        Next Verb
-      </button>
+        <ActionIcon 
+          onClick={handlePlayAudio}
+          color="blue"
+          variant="filled"
+          radius="md"
+          size="lg"
+          style={{ position: 'absolute', top: '8px', right: '8px', zIndex: 10 }}
+        >
+          🔊
+        </ActionIcon>
 
-      {/* Conjugation Toggle Button */}
-      <button 
-        onClick={toggleConjugations}
-        className="mt-4 bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600"
-      >
-        {showConjugations ? 'Hide Conjugations' : 'Show Conjugations'}
-      </button>
+        <div className="flip-card-inner">
+          <Card className="flip-card-front" shadow="sm" p="lg" radius="md" withBorder>
+            <Text size="xl" ta="center">{frontText}</Text>
+          </Card>
+
+          <Card className="flip-card-back" shadow="sm" p="lg" radius="md" withBorder>
+            <Stack align="center" gap={0}>
+              <Text size="xl" mb={4}>{backTitle}</Text>
+              <Text size="xl" fw={600}>{backTranslation}</Text>
+            </Stack>
+          </Card>
+        </div>
+      </Box>
+
+      {/* Action Buttons */}
+      <Group justify="center">
+        <Button 
+          onClick={onNext}
+          color="green"
+          radius="md"
+        >
+          Next Verb
+        </Button>
+
+        <Button 
+          onClick={toggleConjugations}
+          color="grape"
+          radius="md"
+        >
+          {showConjugations ? 'Hide Conjugations' : 'Show Conjugations'}
+        </Button>
+      </Group>
 
       {/* Conjugation Details */}
       {showConjugations && (
-        <div className="mt-8 bg-white rounded shadow p-6 w-full max-w-4xl">
-          <h2 className="text-2xl font-bold mb-4">
+        <Paper shadow="sm" p="lg" radius="md" withBorder w="100%" maw={800} mt="lg">
+          <Title order={2} mb="sm">
             {verb.infinitif} ({verb.english_text})
-          </h2>
-          <p className="mb-4">Group: {verb.groupe} | Auxiliary: {verb.auxiliaire}</p>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          </Title>
+          <Text mb="md">Group: {verb.groupe} | Auxiliary: {verb.auxiliaire}</Text>
+
+          <Grid>
             {/* Present Tenses */}
-            <ConjugationTable
-              title="Present (Présent)"
-              conjugation={verb.indicatif_present}
-            />
-            
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <ConjugationTable
+                title="Present (Présent)"
+                conjugation={verb.indicatif_present}
+              />
+            </Grid.Col>
+
             {/* Imperfect Tense */}
-            <ConjugationTable
-              title="Imperfect (Imparfait)"
-              conjugation={verb.indicatif_imparfait}
-            />
-            
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <ConjugationTable
+                title="Imperfect (Imparfait)"
+                conjugation={verb.indicatif_imparfait}
+              />
+            </Grid.Col>
+
             {/* Future Simple */}
-            <ConjugationTable
-              title="Future (Futur Simple)"
-              conjugation={verb.indicatif_futur_simple}
-            />
-            
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <ConjugationTable
+                title="Future (Futur Simple)"
+                conjugation={verb.indicatif_futur_simple}
+              />
+            </Grid.Col>
+
             {/* Passé Composé */}
-            <ConjugationTable
-              title="Past Perfect (Passé Composé)"
-              conjugation={verb.indicatif_passe_compose}
-            />
-            
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <ConjugationTable
+                title="Past Perfect (Passé Composé)"
+                conjugation={verb.indicatif_passe_compose}
+              />
+            </Grid.Col>
+
             {/* Conditional Present */}
-            <ConjugationTable
-              title="Conditional (Conditionnel Présent)"
-              conjugation={verb.conditionnel_present}
-            />
-            
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <ConjugationTable
+                title="Conditional (Conditionnel Présent)"
+                conjugation={verb.conditionnel_present}
+              />
+            </Grid.Col>
+
             {/* Subjunctive Present */}
-            <ConjugationTable
-              title="Subjunctive (Subjonctif Présent)"
-              conjugation={verb.subjonctif_present}
-            />
-            
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <ConjugationTable
+                title="Subjunctive (Subjonctif Présent)"
+                conjugation={verb.subjonctif_present}
+              />
+            </Grid.Col>
+
             {/* Imperative Present */}
-            <div className="mb-6">
-              <h3 className="text-xl font-bold mb-2">Imperative (Impératif)</h3>
-              <table className="w-full border-collapse bg-indigo-50">
-                <thead>
-                  <tr>
-                    <th className="border border-indigo-200 p-2 bg-indigo-100 text-left">Person</th>
-                    <th className="border border-indigo-200 p-2 bg-indigo-100 text-left">Imperative</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td className="border border-indigo-200 p-2">Tu</td>
-                    <td className="border border-indigo-200 p-2">{verb.imperatif_present.tu}</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-indigo-200 p-2">Nous</td>
-                    <td className="border border-indigo-200 p-2">{verb.imperatif_present.nous}</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-indigo-200 p-2">Vous</td>
-                    <td className="border border-indigo-200 p-2">{verb.imperatif_present.vous}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <Box mb="md">
+                <Title order={3} mb="xs">Imperative (Impératif)</Title>
+                <Table withColumnBorders withTableBorder>
+                  <Table.Thead>
+                    <Table.Tr>
+                      <Table.Th>Person</Table.Th>
+                      <Table.Th>Imperative</Table.Th>
+                    </Table.Tr>
+                  </Table.Thead>
+                  <Table.Tbody>
+                    <Table.Tr>
+                      <Table.Td>Tu</Table.Td>
+                      <Table.Td>{verb.imperatif_present.tu}</Table.Td>
+                    </Table.Tr>
+                    <Table.Tr>
+                      <Table.Td>Nous</Table.Td>
+                      <Table.Td>{verb.imperatif_present.nous}</Table.Td>
+                    </Table.Tr>
+                    <Table.Tr>
+                      <Table.Td>Vous</Table.Td>
+                      <Table.Td>{verb.imperatif_present.vous}</Table.Td>
+                    </Table.Tr>
+                  </Table.Tbody>
+                </Table>
+              </Box>
+            </Grid.Col>
+
             {/* Participle Section */}
-            <div className="mb-6">
-              <h3 className="text-xl font-bold mb-2">Participle</h3>
-              <table className="w-full border-collapse bg-cyan-50">
-                <thead>
-                  <tr>
-                    <th className="border border-cyan-200 p-2 bg-cyan-100 text-left">Form</th>
-                    <th className="border border-cyan-200 p-2 bg-cyan-100 text-left">Participle</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td className="border border-cyan-200 p-2">Present (Présent)</td>
-                    <td className="border border-cyan-200 p-2">{verb.participe_present}</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-cyan-200 p-2">Past (Passé)</td>
-                    <td className="border border-cyan-200 p-2">{verb.participe_passe}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+            <Grid.Col span={{ base: 12, md: 6 }}>
+              <Box mb="md">
+                <Title order={3} mb="xs">Participle</Title>
+                <Table withColumnBorders withTableBorder>
+                  <Table.Thead>
+                    <Table.Tr>
+                      <Table.Th>Form</Table.Th>
+                      <Table.Th>Participle</Table.Th>
+                    </Table.Tr>
+                  </Table.Thead>
+                  <Table.Tbody>
+                    <Table.Tr>
+                      <Table.Td>Present (Présent)</Table.Td>
+                      <Table.Td>{verb.participe_present}</Table.Td>
+                    </Table.Tr>
+                    <Table.Tr>
+                      <Table.Td>Past (Passé)</Table.Td>
+                      <Table.Td>{verb.participe_passe}</Table.Td>
+                    </Table.Tr>
+                  </Table.Tbody>
+                </Table>
+              </Box>
+            </Grid.Col>
+          </Grid>
+        </Paper>
       )}
-    </div>
+    </Stack>
   );
 };
 
@@ -231,61 +262,64 @@ interface ConjugationTableProps {
 }
 
 const ConjugationTable: React.FC<ConjugationTableProps> = ({ title, conjugation }) => {
-  // Define color scheme based on tense title
+  // Define color scheme based on tense title - currently not used
+  // Commented out to avoid unused function warning
+  /*
   const getTenseColor = (title: string) => {
     const colorMap: { [key: string]: string } = {
-      "Present (Présent)": "bg-blue-50 border-blue-200",
-      "Imperfect (Imparfait)": "bg-green-50 border-green-200",
-      "Future (Futur Simple)": "bg-purple-50 border-purple-200",
-      "Past Perfect (Passé Composé)": "bg-amber-50 border-amber-200",
-      "Conditional (Conditionnel Présent)": "bg-rose-50 border-rose-200",
-      "Subjunctive (Subjonctif Présent)": "bg-teal-50 border-teal-200",
+      "Present (Présent)": "blue",
+      "Imperfect (Imparfait)": "green",
+      "Future (Futur Simple)": "violet",
+      "Past Perfect (Passé Composé)": "yellow",
+      "Conditional (Conditionnel Présent)": "pink",
+      "Subjunctive (Subjonctif Présent)": "teal",
     };
-    
-    return colorMap[title] || "bg-gray-50 border-gray-200";
+
+    return colorMap[title] || "gray";
   };
-  
-  const baseColor = getTenseColor(title);
-  const headerColor = baseColor.replace("-50", "-100");
-  
+  */
+
+  // Note: We previously had color-coding for different tenses, but it's not currently used
+  // const color = getTenseColor(title);
+
   return (
-    <div className="mb-6">
-      <h3 className="text-xl font-bold mb-2">{title}</h3>
-      <table className={`w-full border-collapse ${baseColor}`}>
-        <thead>
-          <tr>
-            <th className={`border ${headerColor} p-2 text-left font-semibold`}>Person</th>
-            <th className={`border ${headerColor} p-2 text-left font-semibold`}>{title}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td className={`border ${baseColor} p-2`}>Je</td>
-            <td className={`border ${baseColor} p-2`}>{conjugation.je}</td>
-          </tr>
-          <tr>
-            <td className={`border ${baseColor} p-2`}>Tu</td>
-            <td className={`border ${baseColor} p-2`}>{conjugation.tu}</td>
-          </tr>
-          <tr>
-            <td className={`border ${baseColor} p-2`}>Il/Elle</td>
-            <td className={`border ${baseColor} p-2`}>{conjugation.il_elle}</td>
-          </tr>
-          <tr>
-            <td className={`border ${baseColor} p-2`}>Nous</td>
-            <td className={`border ${baseColor} p-2`}>{conjugation.nous}</td>
-          </tr>
-          <tr>
-            <td className={`border ${baseColor} p-2`}>Vous</td>
-            <td className={`border ${baseColor} p-2`}>{conjugation.vous}</td>
-          </tr>
-          <tr>
-            <td className={`border ${baseColor} p-2`}>Ils/Elles</td>
-            <td className={`border ${baseColor} p-2`}>{conjugation.ils_elles}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <Box mb="md">
+      <Title order={3} mb="xs">{title}</Title>
+      <Table withColumnBorders withTableBorder>
+        <Table.Thead>
+          <Table.Tr>
+            <Table.Th>Person</Table.Th>
+            <Table.Th>{title}</Table.Th>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>
+          <Table.Tr>
+            <Table.Td>Je</Table.Td>
+            <Table.Td>{conjugation.je}</Table.Td>
+          </Table.Tr>
+          <Table.Tr>
+            <Table.Td>Tu</Table.Td>
+            <Table.Td>{conjugation.tu}</Table.Td>
+          </Table.Tr>
+          <Table.Tr>
+            <Table.Td>Il/Elle</Table.Td>
+            <Table.Td>{conjugation.il_elle}</Table.Td>
+          </Table.Tr>
+          <Table.Tr>
+            <Table.Td>Nous</Table.Td>
+            <Table.Td>{conjugation.nous}</Table.Td>
+          </Table.Tr>
+          <Table.Tr>
+            <Table.Td>Vous</Table.Td>
+            <Table.Td>{conjugation.vous}</Table.Td>
+          </Table.Tr>
+          <Table.Tr>
+            <Table.Td>Ils/Elles</Table.Td>
+            <Table.Td>{conjugation.ils_elles}</Table.Td>
+          </Table.Tr>
+        </Table.Tbody>
+      </Table>
+    </Box>
   );
 };
 
